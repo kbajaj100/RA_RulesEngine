@@ -147,4 +147,14 @@ public class LeftRule {
 		
 		return SQL;
 	}
+
+	public String getSQL(int Claim_ID, int Run_ID) {
+		// TODO Auto-generated method stub
+		
+		SQL = "insert into " + myLRindex.getLeft_Flag() + " " + 
+			  "(Run_ID, CLM_ID)" + " " +
+			  "values(" + Run_ID + "," +  Claim_ID + ")";
+				
+		return SQL;
+	}
 }

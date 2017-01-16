@@ -7,7 +7,16 @@ public class DBIndex {
 	String RS_Index = "rcmods.Rule_sheet_Index";
 	String RS = "rcmods.Rule_Sheet";
 	String RS_Left = "rcmods.Rule_Sheet_Left";
+	String Left_Flag = "rcmods.FACT_GIC_STG_LEFT";
 	
+	public String getLeft_Flag() {
+		return Left_Flag;
+	}
+
+	public void setLeft_Flag(String left_Flag) {
+		Left_Flag = left_Flag;
+	}
+
 	public String getClaims_Table() {
 		return Claims_Table;
 	}
