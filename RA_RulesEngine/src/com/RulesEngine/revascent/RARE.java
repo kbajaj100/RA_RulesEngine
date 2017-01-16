@@ -33,15 +33,33 @@ public class RARE {
 
 		createRuleList();
 		
-		LeftRule[] myLR = new LeftRule[numrules];
+		LeftRule[] myLR = new LeftRule[numrules]; // creates an array of the LR object which has all the logic for the Left Rules
+		
+		int left_sub_count;
+		
+		String SQL_out = "";
 		
 		for(int i=0; i<myLR.length; i++)
 		{
 			myLR[i] = new LeftRule();
 			myLR[i].setRuleID(RuleList.get(i));
 			SQL = myLR[i].getSQL_subrulecount();
-			myLR[i].setLeft_sub_count(myconn.execSQL_returnint(SQL));
+			left_sub_count = myconn.execSQL_returnint(SQL);
+			myLR[i].setLeft_sub_count(left_sub_count);
 			
+			// This for loop is for each sub rule within the rule
+			// End goal is to get the Left SQL for that rule
+			for (int j = 1; j <= left_sub_count; ++j){
+
+				if ((j > 1) && (left_sub_count > 1)){
+					SQL_out = SQL_out + "";
+				}
+				
+				SQL = myLR[i].getLeftRuleTypeID(j);
+				myLR[i].setLeftRuleTypeID(myconn.execSQL_returnint(SQL));
+				SQL_out = SQL_out + myLR[i].getRuleSQL();
+				System.out.println("SQL_out for Rule: " + RuleList.get(i) + " is: " + SQL_out);
+			}
 		}
 		
 	}
