@@ -21,21 +21,30 @@ public class RARE {
 	static ArrayList<Integer> RuleList = new ArrayList<Integer>();
 	static int Run_ID = 0;
 	static LocalDateTime Datetime;
-	
+
 	public void execRules() throws FileNotFoundException, IOException, SQLException {
 		// TODO Auto-generated method stub
-		
+
 		initiateDBConn();
-		
+
 		numrules = getnumrules();
-		
+
 		System.out.println("Number of Active rules is: " + numrules);
-		
+
 		createRuleList();
 		
+		LeftRule[] myLR = new LeftRule[numrules];
+		
+		for(int i=0; i<myLR.length; i++)
+		{
+			myLR[i] = new LeftRule();
+			myLR[i].setRuleID(RuleList.get(i));
+			SQL = myLR[i].getSQL_subrulecount();
+			myLR[i].setLeft_sub_count(myconn.execSQL_returnint(SQL));
+			
+		}
+		
 	}
-
-
 
 	private void initiateDBConn() throws FileNotFoundException, IOException, SQLException {
 		// TODO Auto-generated method stub
