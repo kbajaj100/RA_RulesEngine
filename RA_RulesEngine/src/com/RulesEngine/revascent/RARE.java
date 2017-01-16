@@ -40,8 +40,7 @@ public class RARE {
 		createRuleList();
 		
 		getRunID();
-		
-				
+					
 		for (int i = 0; i< numrules; ++i){
 			myLR[i] = new LeftRule();
 			Claims = getLeftClaimList(i, myLR);

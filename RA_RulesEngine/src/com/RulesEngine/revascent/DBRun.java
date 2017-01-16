@@ -8,7 +8,7 @@ public class DBRun {
 		// TODO Auto-generated method stub
 		String SQL;
 		
-		SQL = "select (case when max(RUN_ID) is null then 1 else max(RUN_ID) end) count " +
+		SQL = "select (case when max(RUN_ID) is null then 1 else (max(RUN_ID)+1) end) count " +
 			  "from " + myindex.getLeft_Flag();
 		
 		return SQL;
