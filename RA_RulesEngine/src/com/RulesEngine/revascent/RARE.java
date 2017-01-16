@@ -35,7 +35,7 @@ public class RARE {
 
 		createRuleList();
 		
-		for (int i = 0; i < numrules; ++i){
+		for (int i = 0; i< numrules; ++i){
 			myLR[i] = new LeftRule();
 			getLeftClaimList(i, myLR);
 		}
@@ -56,19 +56,19 @@ public class RARE {
 			
 		// This for loop is for each sub rule within the rule
 		// End goal is to get the Left SQL for that rule
-		for (int j = 1; j <= left_sub_count; ++j){
+		for (int j = 1; j <= left_sub_count; ++j){ 
 
-			if ((j == 1) && (left_sub_count == 1))
+			if ((j == 1))// && (left_sub_count == 1))
 			{
 				SQL = myLR[k].getLeftRuleTypeID(j);
 				myLR[k].setLeftRuleTypeID(myconn.execSQL_returnint(SQL));
-				SQL_out = SQL_out + myLR[k].getRuleSQL() + ") a" + j;
+				SQL_out = SQL_out + myLR[k].getRuleSQL(j) + ") a" + j;
 			}
 			else if ((j>1) && (left_sub_count > 1))
 			{
 				SQL = myLR[k].getLeftRuleTypeID(j);
 				myLR[k].setLeftRuleTypeID(myconn.execSQL_returnint(SQL));
-				SQL_out = SQL_out + " join (" + myLR[k].getRuleSQL() + ") a" + j + " " + 
+				SQL_out = SQL_out + " join (" + myLR[k].getRuleSQL(j) + ") a" + j + " " + 
 						  "on (a" + j + ".CLM_ID = a" + (j-1) + ".CLM_ID)";
 			}
 			System.out.println("SQL_out for Rule: " + RuleList.get(k) + " is: " + SQL_out);

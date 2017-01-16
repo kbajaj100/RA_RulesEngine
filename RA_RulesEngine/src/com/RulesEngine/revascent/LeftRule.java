@@ -82,8 +82,9 @@ public class LeftRule {
 		System.out.println("Left Rule Type for RuleID: " + RuleID + " is: " + LeftRuleTypeID);
 	}
 
-	public String getRuleSQL() {
+	public String getRuleSQL(int j) {
 		
+		// j is the left sub counter, not the count
 		//Get the LeftRuleTypeID
 		int lefttype;
 		lefttype = LeftRuleTypeID;
@@ -99,7 +100,7 @@ public class LeftRule {
 					"(select distinct Rule_Primary_Code " + 
 					"from " + myLRindex.getRS_Left() + " " +  
 					"where Rule_ID = " + RuleID + " " +  
-					"and Left_Sub_Rule_ID = " + left_sub_count + " " +  
+					"and Left_Sub_Rule_ID = " + j + " " +  
 					") " + 
 					"group by CLM_ID " + 
 					"having COUNT(CPT_CODE) = 2)";
@@ -114,7 +115,7 @@ public class LeftRule {
 					"(select Rule_Primary_Code " + 
 					"from " + myLRindex.getRS_Left() + " " +
 					"where Rule_ID = " + RuleID + " " +  
-					"and Left_Sub_Rule_ID = " + left_sub_count + " " +  
+					"and Left_Sub_Rule_ID = " + j + " " +  
 					"and Rule_Left_Line_ID = 1) " +
 					"group by CLM_ID " +
 					"having COUNT(CPT_CODE) = 1) a11 " +
@@ -125,7 +126,7 @@ public class LeftRule {
 					"(select Rule_Primary_Code " +
 					"from " + myLRindex.getRS_Left() + " " +
 					"where Rule_ID = " + RuleID + " " +  
-					"and Left_Sub_Rule_ID = " + left_sub_count + " " +  
+					"and Left_Sub_Rule_ID = " + j + " " +  
 					"and Rule_Left_Line_ID = 2) " +
 					"group by CLM_ID " +
 					"having COUNT(CPT_CODE) = 1) a12 on " +
