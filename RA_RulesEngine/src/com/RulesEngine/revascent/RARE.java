@@ -37,8 +37,8 @@ public class RARE {
 		
 		int left_sub_count;
 		
-		String SQL_out = "";
-		
+		String SQL_out = "select a1.CLM_ID from ("; 
+				
 		for(int i=0; i<myLR.length; i++)
 		{
 			myLR[i] = new LeftRule();
@@ -51,13 +51,20 @@ public class RARE {
 			// End goal is to get the Left SQL for that rule
 			for (int j = 1; j <= left_sub_count; ++j){
 
-				if ((j > 1) && (left_sub_count > 1)){
-					SQL_out = SQL_out + "";
+				if ((j == 1) && (left_sub_count == 1))
+				{
+					SQL = myLR[i].getLeftRuleTypeID(j);
+					myLR[i].setLeftRuleTypeID(myconn.execSQL_returnint(SQL));
+					SQL_out = SQL_out + myLR[i].getRuleSQL() + ") a" + j;
+					
 				}
-				
-				SQL = myLR[i].getLeftRuleTypeID(j);
-				myLR[i].setLeftRuleTypeID(myconn.execSQL_returnint(SQL));
-				SQL_out = SQL_out + myLR[i].getRuleSQL();
+				else if ((j>1) && (left_sub_count > 1))
+				{
+					SQL = myLR[i].getLeftRuleTypeID(j);
+					myLR[i].setLeftRuleTypeID(myconn.execSQL_returnint(SQL));
+					SQL_out = SQL_out + " join (" + myLR[i].getRuleSQL() + ") a" + j + " " + 
+							  "on (a" + j + ".CLM_ID = a" + (j-1) + ".CLM_ID)";
+				}
 				System.out.println("SQL_out for Rule: " + RuleList.get(i) + " is: " + SQL_out);
 			}
 		}
