@@ -21,54 +21,58 @@ public class RARE {
 	static ArrayList<Integer> RuleList = new ArrayList<Integer>();
 	static int Run_ID = 0;
 	static LocalDateTime Datetime;
-
+	LeftRule[] myLR = new LeftRule[1]; // creates an array of the LR object which has all the logic for the Left Rules
+	
 	public void execRules() throws FileNotFoundException, IOException, SQLException {
 		// TODO Auto-generated method stub
 
 		initiateDBConn();
 
 		numrules = getnumrules();
-
+		myLR = new LeftRule[numrules];
+		
 		System.out.println("Number of Active rules is: " + numrules);
 
 		createRuleList();
 		
-		LeftRule[] myLR = new LeftRule[numrules]; // creates an array of the LR object which has all the logic for the Left Rules
+		for (int i = 0; i < numrules; ++i){
+			myLR[i] = new LeftRule();
+			getLeftClaimList(i, myLR);
+		}
+		
+	}
+
+	private void getLeftClaimList(int k, LeftRule[] myLR) {
+		// TODO Auto-generated method stub
 		
 		int left_sub_count;
 		
 		String SQL_out = "select a1.CLM_ID from ("; 
-				
-		for(int i=0; i<myLR.length; i++)
-		{
-			myLR[i] = new LeftRule();
-			myLR[i].setRuleID(RuleList.get(i));
-			SQL = myLR[i].getSQL_subrulecount();
-			left_sub_count = myconn.execSQL_returnint(SQL);
-			myLR[i].setLeft_sub_count(left_sub_count);
-			
-			// This for loop is for each sub rule within the rule
-			// End goal is to get the Left SQL for that rule
-			for (int j = 1; j <= left_sub_count; ++j){
 
-				if ((j == 1) && (left_sub_count == 1))
-				{
-					SQL = myLR[i].getLeftRuleTypeID(j);
-					myLR[i].setLeftRuleTypeID(myconn.execSQL_returnint(SQL));
-					SQL_out = SQL_out + myLR[i].getRuleSQL() + ") a" + j;
-					
-				}
-				else if ((j>1) && (left_sub_count > 1))
-				{
-					SQL = myLR[i].getLeftRuleTypeID(j);
-					myLR[i].setLeftRuleTypeID(myconn.execSQL_returnint(SQL));
-					SQL_out = SQL_out + " join (" + myLR[i].getRuleSQL() + ") a" + j + " " + 
-							  "on (a" + j + ".CLM_ID = a" + (j-1) + ".CLM_ID)";
-				}
-				System.out.println("SQL_out for Rule: " + RuleList.get(i) + " is: " + SQL_out);
+		myLR[k].setRuleID(RuleList.get(k));
+		SQL = myLR[k].getSQL_subrulecount();
+		left_sub_count = myconn.execSQL_returnint(SQL);
+		myLR[k].setLeft_sub_count(left_sub_count);
+			
+		// This for loop is for each sub rule within the rule
+		// End goal is to get the Left SQL for that rule
+		for (int j = 1; j <= left_sub_count; ++j){
+
+			if ((j == 1) && (left_sub_count == 1))
+			{
+				SQL = myLR[k].getLeftRuleTypeID(j);
+				myLR[k].setLeftRuleTypeID(myconn.execSQL_returnint(SQL));
+				SQL_out = SQL_out + myLR[k].getRuleSQL() + ") a" + j;
 			}
-		}
-		
+			else if ((j>1) && (left_sub_count > 1))
+			{
+				SQL = myLR[k].getLeftRuleTypeID(j);
+				myLR[k].setLeftRuleTypeID(myconn.execSQL_returnint(SQL));
+				SQL_out = SQL_out + " join (" + myLR[k].getRuleSQL() + ") a" + j + " " + 
+						  "on (a" + j + ".CLM_ID = a" + (j-1) + ".CLM_ID)";
+			}
+			System.out.println("SQL_out for Rule: " + RuleList.get(k) + " is: " + SQL_out);
+		}	
 	}
 
 	private void initiateDBConn() throws FileNotFoundException, IOException, SQLException {
