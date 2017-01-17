@@ -110,10 +110,35 @@ public class RightRule {
 			SQL = getSQL_Rule_RT2(j, claims);
 		else if (RightRuleTypeID == 3)
 			SQL = getSQL_Rule_RT3(j, claims);
+		else if (RightRuleTypeID == 10)
+			SQL = getSQL_Rule_RT10(j, claims);
 				
 		return SQL;
 	}
 	
+	private String getSQL_Rule_RT10(int j, String claims) {
+		// TODO Auto-generated method stub
+		SQL = "select o11.CLM_ID, '" + Code + "'," + RuleID + "," + j + "," + RUN_ID + " " +
+			  "from " +
+			  "(select distinct a11.CLM_ID " +
+			  "from " + myRRindex.getClaims_Table() + " a11 " +
+			  "where a11.CLM_ID in (" +
+			  claims + ") and " + 
+			  "a11.CLM_ID not in " +
+			  "( " +  
+			  "select CLM_ID " +
+			  "from " + myRRindex.getClaims_Table() + " " +
+			  "where CPT_CODE in " + 
+			  "(select Rule_Sub_Primary_Code1 " + 
+			  "from " + myRRindex.getRS() + " " +
+			  "where Rule_ID = " + RuleID + " " + 
+			  "and Rule_Sub_ID = " + j + ")" +
+			  "and CLM_ID in (" + claims + 
+			  "))) o11";
+		
+		System.out.println(SQL);
+		return SQL;
+	}
 	private String getSQL_Rule_RT3(int j, String claims) {
 		// TODO Auto-generated method stub
 		return null;
@@ -122,7 +147,7 @@ public class RightRule {
 	private String getSQL_Rule_RT2(int j, String claims) {
 		// TODO Auto-generated method stub
 		
-		SQL = "select a11.CLM_ID, " + Code + "," + RuleID + "," + j + "," + RUN_ID + " " +
+		SQL = "select a11.CLM_ID, '" + Code + "'," + RuleID + "," + j + "," + RUN_ID + " " +
 			  "from " + 	
 			  "(select distinct CLM_ID " +
 			  "from " + myRRindex.getClaims_Table() + ") a11 " +
@@ -146,14 +171,13 @@ public class RightRule {
 			  "where Rule_ID = " + RuleID + " " + 
 			  "and Rule_Sub_ID = " + j + "))";
 		
-		System.out.println(SQL);
 		return SQL;
 	}
 	
 	private String getSQL_Rule_RT1(int j, String claims) {
 		
 						//CLM_ID, CPT_CODE, 	RULE_ID, SUB_RULE_ID, RUN_ID
-		SQL = "select o11.CLM_ID, " + Code +","+ RuleID + ","+ j + ","+ RUN_ID + " " + 
+		SQL = "select o11.CLM_ID, '" + Code +"',"+ RuleID + ","+ j + ","+ RUN_ID + " " + 
 			  "from (" +		
 			  "select a11.CLM_ID " + 
 			  "from " + myRRindex.getClaims_Table() + " a11 " +
