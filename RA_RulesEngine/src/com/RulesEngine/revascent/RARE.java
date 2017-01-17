@@ -70,29 +70,33 @@ public class RARE {
 		
 		int left_sub_count, left_rule_type = 0;
 		
-		
 		String SQL_out = "select a1.CLM_ID from ("; 
 		
 		myLR[k].setRuleID(RuleList.get(k));
 		SQL = myLR[k].getSQL_subrulecount();
 		left_sub_count = myconn.execSQL_returnint(SQL);
 		myLR[k].setLeft_sub_count(left_sub_count);
+		
 			
 		// This for loop is for each sub rule within the rule
 		// End goal is to get the Left SQL for that rule
+		// j is the counter for the sub rule
 		for (int j = 1; j <= left_sub_count; ++j){ 
 
-			SQL = myLR[k].getLeftRuleTypeID(j);
+			SQL = myLR[k].getSQL_LeftRuleTypeID(j);
 			left_rule_type = myconn.execSQL_returnint(SQL);
 			myLR[k].setLeftRuleTypeID(left_rule_type);
 			
+			//Get the SQL for the search type and, get the search type and then set it
+			myLR[k].setSearch_Type(myconn.execSQL_returnString(myLR[k].getSQL_searchtype(j)));
+
 			if ((j == 1))// && (left_sub_count == 1))
 			{
-				SQL_out = SQL_out + myLR[k].getRuleSQL(j) + ") a" + j;
+				SQL_out = SQL_out + myLR[k].getSQL_Rule(j) + ") a" + j;
 			}
 			else if ((j>1) && (left_sub_count > 1))
 			{
-				SQL_out = SQL_out + " join (" + myLR[k].getRuleSQL(j) + ") a" + j + " " + 
+				SQL_out = SQL_out + " join (" + myLR[k].getSQL_Rule(j) + ") a" + j + " " + 
 						  "on (a" + j + ".CLM_ID = a" + (j-1) + ".CLM_ID)";
 			}
 			
@@ -120,7 +124,7 @@ public class RARE {
 	    			Claim_list =  Integer.toString(crs.getInt(1));
 	    		else Claim_list =  Claim_list + "," + Integer.toString(crs.getInt(1));
 	    		
-	    		SQL = myLR[k].getinsertSQL(crs.getInt(1), RUN_ID);
+	    		SQL = myLR[k].getSQL_insert(crs.getInt(1), RUN_ID);
 	    		myconn.execSQL(SQL);
 	    	}
 

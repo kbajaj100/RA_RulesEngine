@@ -10,6 +10,8 @@ public class LeftRule {
 	String SQL;
 	String SQL_out;
 	String Claims;
+	
+	String Search_Type;
 	int left_sub_count;
 	int RuleID;
 	int LeftRuleTypeID;
@@ -22,6 +24,17 @@ public class LeftRule {
 	static DBConn myconn = new DBConn();
 	static String dbUrl;
 	
+	
+	
+	
+	public String getSearch_Type() {
+		return Search_Type;
+	}
+
+	public void setSearch_Type(String search_Type) {
+		Search_Type = search_Type;
+	}
+
 	public int getRUN_ID() {
 		return RUN_ID;
 	}
@@ -78,6 +91,19 @@ public class LeftRule {
 		System.out.println("Number of Sub Rules for " + RuleID + " is: " + this.left_sub_count);
 	}
 
+	
+	public String getSQL_searchtype(int j) {
+		
+		SQL = "select distinct Search_Type code " +
+			  "from " + myLRindex.RS_Left + " " + 
+			  "where Rule_ID = " + RuleID + " " + 
+			  "and Left_Sub_Rule_ID = " + j;
+		
+		System.out.println(SQL);
+		return SQL;
+	}
+	
+	
 	public String getSQL_subrulecount() {
 		// TODO Auto-generated method stub
 		
@@ -87,14 +113,7 @@ public class LeftRule {
 		return SQL;
 	}
 
-	public void execLR(int ruleID) throws FileNotFoundException, IOException, SQLException {
-		// TODO Auto-generated method stub
-	
-		System.out.println("RuleID in LR is: " + ruleID);
-		
-	}
-
-	public String getLeftRuleTypeID(int j) {
+	public String getSQL_LeftRuleTypeID(int j) {
 		// TODO Auto-generated method stub
 		SQL = "select distinct Left_Rule_Type_ID count " + 
 			  "from " + myLRindex.getRS_Left() + " " + 
@@ -113,24 +132,24 @@ public class LeftRule {
 		System.out.println("Left Rule Type for RuleID: " + RuleID + " is: " + LeftRuleTypeID);
 	}
 
-	public String getRuleSQL(int j) {
+	public String getSQL_Rule(int j) {
 		
 		// j is the left sub counter, not the count
 		//Get the LeftRuleTypeID
 		
 		if (LeftRuleTypeID == 1)
-			SQL = getRuleSQL_RT1(j);
+			SQL = getSQL_Rule_RT1(j);
 		else if (LeftRuleTypeID == 2)
-			SQL = getRuleSQL_RT2(j);
+			SQL = getSQL_Rule_RT2(j);
 		else if (LeftRuleTypeID  == 3){
-			SQL = getRuleSQL_RT3(j);
+			SQL = getSQL_Rule_RT3(j);
 			
 		}
 		
 		return SQL;
 	}
 
-	private String getRuleSQL_RT3(int j) {
+	private String getSQL_Rule_RT3(int j) {
 		
 		SQL = "select CLM_ID, COUNT(distinct CPT_CODE) count " + 
 			  "from " + myLRindex.getClaims_Table() + " " + 
@@ -148,7 +167,7 @@ public class LeftRule {
 		return SQL;
 	}
 
-	private String getRuleSQL_RT2(int j) {
+	private String getSQL_Rule_RT2(int j) {
 		// TODO Auto-generated method stub
 		
 		SQL = "select distinct a11.CLM_ID CLM_ID " +
@@ -180,7 +199,7 @@ public class LeftRule {
 		return SQL;
 	}
 
-	private String getRuleSQL_RT1(int j) {
+	private String getSQL_Rule_RT1(int j) {
 		
 		SQL = 	"select distinct CLM_ID CLM_ID " + 
 				"from " + myLRindex.getClaims_Table() + " " +
@@ -199,7 +218,7 @@ public class LeftRule {
 		return SQL;
 	}
 
-	public String getinsertSQL(int Claim_ID, int Run_ID) {
+	public String getSQL_insert(int Claim_ID, int Run_ID) {
 		// TODO Auto-generated method stub
 		
 		SQL = "insert into " + myLRindex.getLeft_Flag() + " " + 
