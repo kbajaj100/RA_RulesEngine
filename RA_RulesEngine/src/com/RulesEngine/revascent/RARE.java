@@ -43,33 +43,33 @@ public class RARE {
 					
 		for (int i = 0; i< numrules; ++i){
 			myLR[i] = new LeftRule();
-			Claims = getLeftClaimList(i, myLR);
+			myLR[i].setRUN_ID(RUN_ID);
+			Claims = getLeftClaimList(i);
 			
 			myRight[i] = new RightRule();
 			Claims = getRightClaimList(i, Claims);
-		}
-		
+		}		
 	}
 
 	private void getRunID() {
 		// TODO Auto-generated method stub
-		DBRun myrun = new DBRun();
-		
-		SQL = myrun.getRunIDSQL();
-		
+		DBRun myrun = new DBRun();		
+		SQL = myrun.getRunIDSQL();		
 		RUN_ID = (myconn.execSQL_returnint(SQL));
 	}
 
 	private String getRightClaimList(int i, String claims) {
 		// TODO Auto-generated method stub
 		
+		int RuleID = RuleList.get(i);	
 		return claims;
 	}
 
-	private String getLeftClaimList(int k, LeftRule[] myLR) {
+	private String getLeftClaimList(int k) throws FileNotFoundException, IOException, SQLException {
 		// k is counter in the LeftRule object array
 		
-		int left_sub_count;
+		int left_sub_count, left_rule_type = 0;
+		
 		
 		String SQL_out = "select a1.CLM_ID from ("; 
 		
@@ -82,16 +82,16 @@ public class RARE {
 		// End goal is to get the Left SQL for that rule
 		for (int j = 1; j <= left_sub_count; ++j){ 
 
+			SQL = myLR[k].getLeftRuleTypeID(j);
+			left_rule_type = myconn.execSQL_returnint(SQL);
+			myLR[k].setLeftRuleTypeID(left_rule_type);
+			
 			if ((j == 1))// && (left_sub_count == 1))
 			{
-				SQL = myLR[k].getLeftRuleTypeID(j);
-				myLR[k].setLeftRuleTypeID(myconn.execSQL_returnint(SQL));
 				SQL_out = SQL_out + myLR[k].getRuleSQL(j) + ") a" + j;
 			}
 			else if ((j>1) && (left_sub_count > 1))
 			{
-				SQL = myLR[k].getLeftRuleTypeID(j);
-				myLR[k].setLeftRuleTypeID(myconn.execSQL_returnint(SQL));
 				SQL_out = SQL_out + " join (" + myLR[k].getRuleSQL(j) + ") a" + j + " " + 
 						  "on (a" + j + ".CLM_ID = a" + (j-1) + ".CLM_ID)";
 			}
@@ -99,11 +99,11 @@ public class RARE {
 			System.out.println("SQL_out for Rule: " + RuleList.get(k) + " is: " + SQL_out);
 		}
 
-		return(getLeftSQL_out_result(SQL_out, k));
+		return(getLeftSQL_out_result(SQL_out, k, left_rule_type));
 		
 	}
-	
-	private String getLeftSQL_out_result(String SQL_out, int k){
+
+	private String getLeftSQL_out_result(String SQL_out, int k, int left_rule_type){
 		
 		String Claim_list = "";
 		if(!myconn.execSQL_crs(SQL_out))
@@ -119,16 +119,15 @@ public class RARE {
 	    		if (Claim_list.equals(""))
 	    			Claim_list =  Integer.toString(crs.getInt(1));
 	    		else Claim_list =  Claim_list + "," + Integer.toString(crs.getInt(1));
-
-	    		SQL = myLR[k].getSQL(crs.getInt(1), RUN_ID);
+	    		
+	    		SQL = myLR[k].getinsertSQL(crs.getInt(1), RUN_ID);
 	    		myconn.execSQL(SQL);
 	    	}
 
 	    } catch (SQLException se){
 	    	se.printStackTrace();
 	    }		
-	    
-	    
+	    	    
 	    System.out.println("");
 	    System.out.println("Claims List for Rule ID: " + RuleList.get(k) + " is " + Claim_list);
 	    
@@ -203,6 +202,5 @@ public class RARE {
 		for(int i = 0; i < arc; ++i){
 			System.out.println("Rule ID in Rule List is: " + RuleList.get(i));
 		}
-	}
-	
+	}	
 }

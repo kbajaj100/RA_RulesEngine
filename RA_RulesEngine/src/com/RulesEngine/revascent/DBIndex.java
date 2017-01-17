@@ -4,11 +4,24 @@ public class DBIndex {
 
 	String Claims_Table = "rcmods.VW_CLAIM_CPT";
 	String Flagged_Table = "rcmods.FACT_GIC_STG"; 
+	String Left_Flag = "rcmods.FACT_GIC_STG_LEFT";
+	String Left_Occur = "rcmods.FACT_GIC_OCCURENCE";
+
 	String RS_Index = "rcmods.Rule_sheet_Index";
 	String RS = "rcmods.Rule_Sheet";
 	String RS_Left = "rcmods.Rule_Sheet_Left";
-	String Left_Flag = "rcmods.FACT_GIC_STG_LEFT";
+
 	
+	
+	
+	public String getLeft_Occur() {
+		return Left_Occur;
+	}
+
+	public void setLeft_Occur(String left_Occur) {
+		Left_Occur = left_Occur;
+	}
+
 	public String getLeft_Flag() {
 		return Left_Flag;
 	}

@@ -13,11 +13,38 @@ public class LeftRule {
 	int left_sub_count;
 	int RuleID;
 	int LeftRuleTypeID;
+	int occur_count;
+	int RUN_ID;
+	
+	DBConn myConn;
 	
 	DBIndex myLRindex = new DBIndex();
 	static DBConn myconn = new DBConn();
 	static String dbUrl;
 	
+	public int getRUN_ID() {
+		return RUN_ID;
+	}
+
+	public void setRUN_ID(int rUN_ID) {
+		RUN_ID = rUN_ID;
+	}
+
+	public static DBConn getMyconn() {
+		return myconn;
+	}
+
+	public static void setMyconn() throws FileNotFoundException, IOException, SQLException {
+		//LeftRule.myconn = myconn;
+		myconn = new DBConn();
+		myconn.setDBConn("C:/Props/RulesEngine/DBprops.properties");
+		
+	}
+	
+	public int getoccur_count() {
+		return occur_count;
+	}
+
 	public int getRuleID() {
 		return RuleID;
 	}
@@ -77,8 +104,12 @@ public class LeftRule {
 		return SQL;
 	}	
 	
-	public void setLeftRuleTypeID(int j) {
+	public void setLeftRuleTypeID(int j) throws FileNotFoundException, IOException, SQLException {
 		LeftRuleTypeID = j;	
+		
+		if (j==3)
+			setMyconn();
+		
 		System.out.println("Left Rule Type for RuleID: " + RuleID + " is: " + LeftRuleTypeID);
 	}
 
@@ -86,75 +117,119 @@ public class LeftRule {
 		
 		// j is the left sub counter, not the count
 		//Get the LeftRuleTypeID
-		int lefttype;
-		lefttype = LeftRuleTypeID;
 		
-		if (lefttype == 1) 
-		{
-			SQL = 	"select distinct CLM_ID CLM_ID " + 
-					"from " + myLRindex.getClaims_Table() + " " +
-					"where CLM_ID in " +
-					"(select CLM_ID " + 
-					"from " + myLRindex.getClaims_Table() + " " + 
-					"where CPT_CODE = " +  
-					"(select distinct Rule_Primary_Code " + 
-					"from " + myLRindex.getRS_Left() + " " +  
-					"where Rule_ID = " + RuleID + " " +  
-					"and Left_Sub_Rule_ID = " + j + " " +  
-					") " + 
-					"group by CLM_ID " + 
-					"having COUNT(CPT_CODE) = 2)";
-		}
-		else if (lefttype == 2)
-		{
-			SQL = 	"select distinct a11.CLM_ID CLM_ID " +
-					"from " + 
-					"(select CLM_ID " + 
-					"from " + myLRindex.getClaims_Table() + " " + 
-					"where CPT_CODE in " + 
-					"(select Rule_Primary_Code " + 
-					"from " + myLRindex.getRS_Left() + " " +
-					"where Rule_ID = " + RuleID + " " +  
-					"and Left_Sub_Rule_ID = " + j + " " +  
-					"and Rule_Left_Line_ID = 1) " +
-					"group by CLM_ID " +
-					"having COUNT(CPT_CODE) = 1) a11 " +
-					"join " +
-					"(select CLM_ID " +
-					"from " + myLRindex.getClaims_Table() + " " +
-					"where CPT_CODE in " +
-					"(select Rule_Primary_Code " +
-					"from " + myLRindex.getRS_Left() + " " +
-					"where Rule_ID = " + RuleID + " " +  
-					"and Left_Sub_Rule_ID = " + j + " " +  
-					"and Rule_Left_Line_ID = 2) " +
-					"group by CLM_ID " +
-					"having COUNT(CPT_CODE) = 1) a12 on " +
-					"(a11.CLM_ID = a12.CLM_ID)"; 
-			System.out.println(SQL);
-		}
-		else if (lefttype == 3){
-			String SQL_in = "";
-			//SQL_in = getSQLin_Left_RuleType3(ruleID, ruleType, ruleTypeNumber);
-			//System.out.println(SQL);
-			
-			/*SQL = "select CLM_ID CLM_ID, count(CPT_SEQUENCE_ID) count " + 
-				  "from " + myDBIndex.getClaims_Table() + " " + 
-				  "where CPT_Code in " + SQL_in + " group by CLM_ID";
-			*/
+		if (LeftRuleTypeID == 1)
+			SQL = getRuleSQL_RT1(j);
+		else if (LeftRuleTypeID == 2)
+			SQL = getRuleSQL_RT2(j);
+		else if (LeftRuleTypeID  == 3){
+			SQL = getRuleSQL_RT3(j);
 			
 		}
 		
 		return SQL;
 	}
 
-	public String getSQL(int Claim_ID, int Run_ID) {
+	private String getRuleSQL_RT3(int j) {
+		
+		SQL = "select CLM_ID, COUNT(distinct CPT_CODE) count " + 
+			  "from " + myLRindex.getClaims_Table() + " " + 
+			  "where CPT_CODE in " +  
+			  "(" + 
+			  "select Rule_Primary_Code " + 
+			  "from " +  myLRindex.getRS_Left() + " " +
+			  "where Rule_ID = " + RuleID + " " + 
+			  "and Left_Sub_Rule_ID = " + j + " " +
+			  ")" + " " + 
+			  "group by CLM_ID";
+		
+		insertSQL_RT3(j);
+		
+		return SQL;
+	}
+
+	private String getRuleSQL_RT2(int j) {
+		// TODO Auto-generated method stub
+		
+		SQL = "select distinct a11.CLM_ID CLM_ID " +
+		"from " + 
+		"(select CLM_ID " + 
+		"from " + myLRindex.getClaims_Table() + " " + 
+		"where CPT_CODE in " + 
+		"(select Rule_Primary_Code " + 
+		"from " + myLRindex.getRS_Left() + " " +
+		"where Rule_ID = " + RuleID + " " +  
+		"and Left_Sub_Rule_ID = " + j + " " +  
+		"and Rule_Left_Line_ID = 1) " +
+		"group by CLM_ID " +
+		"having COUNT(CPT_CODE) = 1) a11 " +
+		"join " +
+		"(select CLM_ID " +
+		"from " + myLRindex.getClaims_Table() + " " +
+		"where CPT_CODE in " +
+		"(select Rule_Primary_Code " +
+		"from " + myLRindex.getRS_Left() + " " +
+		"where Rule_ID = " + RuleID + " " +  
+		"and Left_Sub_Rule_ID = " + j + " " +  
+		"and Rule_Left_Line_ID = 2) " +
+		"group by CLM_ID " +
+		"having COUNT(CPT_CODE) = 1) a12 on " +
+		"(a11.CLM_ID = a12.CLM_ID)"; 
+		
+		System.out.println(SQL);
+		return SQL;
+	}
+
+	private String getRuleSQL_RT1(int j) {
+		
+		SQL = 	"select distinct CLM_ID CLM_ID " + 
+				"from " + myLRindex.getClaims_Table() + " " +
+				"where CLM_ID in " +
+				"(select CLM_ID " + 
+				"from " + myLRindex.getClaims_Table() + " " + 
+				"where CPT_CODE = " +  
+				"(select distinct Rule_Primary_Code " + 
+				"from " + myLRindex.getRS_Left() + " " +  
+				"where Rule_ID = " + RuleID + " " +  
+				"and Left_Sub_Rule_ID = " + j + " " +  
+				") " + 
+				"group by CLM_ID " + 
+				"having COUNT(CPT_CODE) = 2)";
+		
+		return SQL;
+	}
+
+	public String getinsertSQL(int Claim_ID, int Run_ID) {
 		// TODO Auto-generated method stub
 		
 		SQL = "insert into " + myLRindex.getLeft_Flag() + " " + 
-			  "(Run_ID, CLM_ID)" + " " +
-			  "values(" + Run_ID + "," +  Claim_ID + ")";
-				
+			  "(Run_ID, CLM_ID, RULE_ID)" + " " +
+			  "values(" + Run_ID + "," +  Claim_ID + "," + RuleID + ")";
+		
+		//System.out.println(SQL);
 		return SQL;
 	}
+
+	public void insertSQL_RT3(int j) {
+		// TODO Auto-generated method stub
+		
+		String SQL_occur;
+		
+		SQL_occur = "insert into " + myLRindex.getLeft_Occur() + " " + 
+				  "(Run_ID, CLM_ID, RULE_ID, COUNT_OCCUR)" + " " +
+				  "select " + RUN_ID + "," + RuleID +",CLM_ID, COUNT(distinct CPT_CODE) count " + 
+				  "from " + myLRindex.getClaims_Table() + " " + 
+				  "where CPT_CODE in " +  
+				  "(" + 
+				  "select Rule_Primary_Code " + 
+				  "from " +  myLRindex.getRS_Left() + " " +
+				  "where Rule_ID = " + RuleID + " " + 
+				  "and Left_Sub_Rule_ID = " + j + " " +
+				  ")" + " " + 
+				  "group by CLM_ID";  
+			
+		System.out.println(SQL_occur);
+		myconn.execSQL(SQL_occur);
+	}
+	
 }
