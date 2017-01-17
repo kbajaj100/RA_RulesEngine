@@ -47,6 +47,7 @@ public class RARE {
 			Claims = getLeftClaimList(i);
 			
 			myRight[i] = new RightRule();
+			myRight[i].setRUN_ID(RUN_ID);
 			Claims = getRightClaimList(i, Claims);
 		}		
 	}
@@ -61,7 +62,37 @@ public class RARE {
 	private String getRightClaimList(int i, String claims) {
 		// TODO Auto-generated method stub
 		
-		int RuleID = RuleList.get(i);	
+		int right_rule_type = 0;
+		
+		myRight[i].setRuleID(RuleList.get(i));	
+		//For each rule, get the # of sub rules
+		myRight[i].setRight_sub_count(myconn.execSQL_returnint(myRight[i].getSQL_subrulecount()));
+		
+		//for loop, get the rule type for each sub rule
+		//get the SQL for the sub rule
+		//run the SQL and insert the claims into the table
+		//loop
+		
+		//j is the counter for the sub rules
+		for(int j = 1; j <= myconn.execSQL_returnint(myRight[i].getSQL_subrulecount()); ++j)
+		{
+			SQL = myRight[i].getSQL_RightRuleTypeID(j);
+			right_rule_type = myconn.execSQL_returnint(SQL);
+			myRight[i].setRightRuleTypeID(right_rule_type);
+			
+			// get the search type
+			myRight[i].setSearch_Type(myconn.execSQL_returnString(myRight[i].getSQL_searchtype(j)));
+			
+			//set the value of the code in that cell of the array for that Rule, Sub Rule
+			myRight[i].setCode(myconn.execSQL_returnString(myRight[i].getSQL_code(j)));
+			
+			SQL = "insert into " + myDBindex.Flagged_Table + 
+				  "(CLM_ID, CPT_CODE, Rule_ID, Sub_Rule_ID, RUN_ID)" +
+					myRight[i].getSQL_Rule(j, claims) ;
+			
+			myconn.execSQL(SQL);
+		}
+		
 		return claims;
 	}
 

@@ -11,9 +11,6 @@ public class DBIndex {
 	String RS = "rcmods.Rule_Sheet";
 	String RS_Left = "rcmods.Rule_Sheet_Left";
 
-	
-	
-	
 	public String getLeft_Occur() {
 		return Left_Occur;
 	}
