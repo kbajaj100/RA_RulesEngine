@@ -122,7 +122,31 @@ public class RightRule {
 	private String getSQL_Rule_RT2(int j, String claims) {
 		// TODO Auto-generated method stub
 		
+		SQL = "select a11.CLM_ID, " + Code + "," + RuleID + "," + j + "," + RUN_ID + " " +
+			  "from " + 	
+			  "(select distinct CLM_ID " +
+			  "from " + myRRindex.getClaims_Table() + ") a11 " +
+			  "join " +
+			  "(select CLM_ID " +
+			  "from " + myRRindex.getClaims_Table() + " " +
+			  "where CPT_CODE in " + 
+			  "(select Rule_Sub_Primary_Code1 " + 
+			  "from " + myRRindex.getRS() + " " + 
+			  "where Rule_ID = " + RuleID + " " + 
+			  "and Rule_Sub_ID = " + j + ")) a12 on " +
+			  "(a11.CLM_ID = a12.CLM_ID) " +
+			  "where a11.CLM_ID in (" +
+			  claims + ") and " + 
+			  "a11.CLM_ID not in " +
+			  "(select distinct CLM_ID " +
+			  "from " + myRRindex.getClaims_Table() + " " +
+			  "where CPT_CODE in " + 
+			  "(select Missing_Value " +
+			  "from " + myRRindex.getRS() + " " +  
+			  "where Rule_ID = " + RuleID + " " + 
+			  "and Rule_Sub_ID = " + j + "))";
 		
+		System.out.println(SQL);
 		return SQL;
 	}
 	
