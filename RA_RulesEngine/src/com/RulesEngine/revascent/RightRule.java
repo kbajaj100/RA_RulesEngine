@@ -173,6 +173,18 @@ public class RightRule {
 		return SQL;
 	}
 	
+	public String getSQL_code(int j, int line_number) {
+		// TODO Auto-generated method stub
+		SQL = "select Missing_Value code " +
+			  "from " + myRRindex.getRS() + " " + 
+			  "where Rule_ID = " + RuleID + " " +
+			  "and Rule_Sub_ID = " + j + " " +
+			  "and Rule_Line_ID = " + line_number;
+		
+		//System.out.println(SQL);
+		return SQL;
+	}
+	
 	public String getSQL_Rule(int j, String claims) throws FileNotFoundException, IOException, SQLException {
 		// TODO Auto-generated method stub
 		
@@ -188,7 +200,37 @@ public class RightRule {
 			SQL = getSQL_Rule_RT10(j, claims, Rule_Line_ID);
 		else if (RightRuleTypeID == 11)
 			SQL = getSQL_Rule_RT11(j, claims);
+		else if (RightRuleTypeID == 12)
+			SQL = getSQL_Rule_RT12(j, claims, Rule_Line_ID);
 		
+		return SQL;
+	}
+	
+	private String getSQL_Rule_RT12(int j, String claims, int rule_Line_ID) {
+		
+		SQL = "select distinct o11.CLM_ID, '" + Code + " ' as Code," + RuleID + " as RuleID," + j + " as SubID," + RUN_ID + " as RunID " + 
+			  "from " + myRRindex.getClaims_Table() + " o11 " + 
+			  "where o11.CLM_ID not in " + 
+			  "(select distinct a11.CLM_ID " + 
+			  "from " + myRRindex.getClaims_Table() + " a11 " + 
+			  "where (a11.CPT_CODE in " + 
+			  "(select Rule_Sub_Primary_Code1 " + 
+			  "from " + myRRindex.getRS() + " " + 
+			  "where Rule_ID = " + RuleID + " " + 
+			  "and Rule_Sub_ID = " + j + " " +
+			  "and Rule_Line_ID = " + rule_Line_ID + " " + 
+			  ")" + " " + 
+			  "or CPT_CODE in " + 
+			  "(select Missing_Value " + 
+			  "from rcmods.Rule_Sheet " + 
+			  "where Rule_ID = " + RuleID + " " + 
+			  "and Rule_Sub_ID = " + j + " " + 
+			  "and Rule_Line_ID = " + rule_Line_ID  + " " +
+			  ")) " +
+			  "and CLM_ID in (" + claims + ")) " +  
+			  "and o11.CLM_ID in (" + claims + ")";
+		
+		System.out.println(SQL);
 		return SQL;
 	}
 	
@@ -221,6 +263,8 @@ public class RightRule {
 				SQL = getSQL_Rule_RT5(j, claims, checker);
 			else if (base == 10)
 				SQL = getSQL_Rule_RT10(j, claims, checker);
+			else if (base == 12)
+				SQL = getSQL_Rule_RT12(j, claims, checker);
 			
 			// create SQL to join the queries - this will be challenging
 			if (checker == Rule_Line_ID)
@@ -311,8 +355,12 @@ public class RightRule {
 			  "from (" +		
 			  "select a11.CLM_ID " + 
 			  "from " + myRRindex.getClaims_Table() + " a11 " +
-			  "where a11.CPT_Code in ('" + Code +
-			  "') and CLM_ID in (" +
+			  "where a11.CPT_Code in (select Missing_Value " +
+			  "from " + myRRindex.getRS() + " " +  
+			  "where Rule_ID = " + RuleID + " " + 
+			  "and Rule_Line_ID = " + line + " " +
+			  "and Rule_Sub_ID = " + j + ") "+ 
+			  "and CLM_ID in (" +
 			  claims + ") " +
 			  "group by a11.CLM_ID " +
 			  "having COUNT(a11.CPT_CODE) = 1) o11";
@@ -321,17 +369,6 @@ public class RightRule {
 		return SQL;
 	}
 	
-	public String getSQL_code(int j, int line_number) {
-		// TODO Auto-generated method stub
-		SQL = "select Missing_Value code " +
-			  "from " + myRRindex.getRS() + " " + 
-			  "where Rule_ID = " + RuleID + " " +
-			  "and Rule_Sub_ID = " + j + " " +
-			  "and Rule_Line_ID = " + line_number;
-		
-		//System.out.println(SQL);
-		return SQL;
-	}
 
 	
 }
