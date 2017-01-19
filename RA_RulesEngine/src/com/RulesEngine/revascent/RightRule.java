@@ -9,10 +9,15 @@ public class RightRule {
 	
 	String Search_Type;
 	int right_sub_count;
+	int right_sub;
 	int RuleID;
 	int RightRuleTypeID;
 	int occur_count;
 	int RUN_ID;
+	int Rule_Line_ID;
+	int Sub_Line_Count;
+	int Base_Rule_Type_ID;
+	String Rel_Next;
 	
 	DBConn myConn;
 	
@@ -21,7 +26,36 @@ public class RightRule {
 	static String dbUrl;
 	
 	
-	
+	public int getSub_Line_Count() {
+		return Sub_Line_Count;
+	}
+	public void setSub_Line_Count(int sub_Line_Count) {
+		Sub_Line_Count = sub_Line_Count;
+	}
+	public int getRight_sub() {
+		return right_sub;
+	}
+	public void setRight_sub(int right_sub) {
+		this.right_sub = right_sub;
+	}
+	public int getRule_Line_ID() {
+		return Rule_Line_ID;
+	}
+	public void setRule_Line_ID(int rule_Line_ID) {
+		Rule_Line_ID = rule_Line_ID;
+	}
+	public int getBase_Rule_Type_ID() {
+		return Base_Rule_Type_ID;
+	}
+	public void setBase_Rule_Type_ID(int base_Rule_Type_ID) {
+		Base_Rule_Type_ID = base_Rule_Type_ID;
+	}
+	public String getRel_Next() {
+		return Rel_Next;
+	}
+	public void setRel_Next(String rel_Next) {
+		Rel_Next = rel_Next;
+	}
 	public String getCode() {
 		return Code;
 	}
@@ -71,6 +105,39 @@ public class RightRule {
 		RUN_ID = rUN_ID;
 	}
 	
+	/*public String getSQL_RelNext(int j){
+		
+	}*/
+	
+	public String getSQL_Base_Rule(int j){
+		
+		SQL = "select distinct Base_Rule_Type_ID count " +
+			  "from " + myRRindex.getRS() + " " + 
+			  "where Rule_ID =" + RuleID + " " + 
+			  "and Rule_Sub_ID = "  + j;
+		
+		return SQL;
+	}
+	
+	public String getSQL_Rule_Line_Count(int j){
+		
+		SQL = "select count(Rule_Line_ID) count " +
+			  "from " + myRRindex.getRS() + " " + 
+			  "where Rule_ID =" + RuleID + " " + 
+			  "and Rule_Sub_ID = "  + j;
+			 
+		return SQL;
+	}
+	public String getSQL_Rule_Line_ID(int j){
+		
+		SQL = "select min(Rule_Line_ID) count " +
+			  "from " + myRRindex.getRS() + " " + 
+			  "where Rule_ID =" + RuleID + " " + 
+			  "and Rule_Sub_ID = "  + j;
+			 
+		return SQL;
+	}
+	
 	public String getSQL_subrulecount(){
 		
 		SQL = "select count(Rule_Sub_ID) count " +
@@ -110,12 +177,23 @@ public class RightRule {
 			SQL = getSQL_Rule_RT2(j, claims);
 		else if (RightRuleTypeID == 3)
 			SQL = getSQL_Rule_RT3(j, claims);
+		else if (RightRuleTypeID == 5)
+			SQL = getSQL_Rule_RT5(j, claims);
 		else if (RightRuleTypeID == 10)
 			SQL = getSQL_Rule_RT10(j, claims);
-				
+		else if (RightRuleTypeID == 11)
+			SQL = getSQL_Rule_RT11(j, claims);
+		
 		return SQL;
 	}
 	
+	private String getSQL_Rule_RT11(int j, String claims2) {
+		// TODO Auto-generated method stub
+		
+		
+		
+		return SQL;
+	}
 	private String getSQL_Rule_RT10(int j, String claims) {
 		// TODO Auto-generated method stub
 		SQL = "select o11.CLM_ID, '" + Code + "'," + RuleID + "," + j + "," + RUN_ID + " " +
@@ -139,13 +217,22 @@ public class RightRule {
 		System.out.println(SQL);
 		return SQL;
 	}
-	private String getSQL_Rule_RT3(int j, String claims) {
+	
+	private String getSQL_Rule_RT5(int j, String claims2) {
 		// TODO Auto-generated method stub
+		
+		
+		return SQL;
+	}
+	
+	private String getSQL_Rule_RT3(int j, String claims) {
+		
+		
+		
 		return null;
 	}
 	
 	private String getSQL_Rule_RT2(int j, String claims) {
-		// TODO Auto-generated method stub
 		
 		SQL = "select a11.CLM_ID, '" + Code + "'," + RuleID + "," + j + "," + RUN_ID + " " +
 			  "from " + 	
@@ -191,12 +278,13 @@ public class RightRule {
 		return SQL;
 	}
 	
-	public String getSQL_code(int j) {
+	public String getSQL_code(int j, int line_number) {
 		// TODO Auto-generated method stub
 		SQL = "select Missing_Value code " +
 			  "from " + myRRindex.getRS() + " " + 
 			  "where Rule_ID = " + RuleID + " " +
-			  "and Rule_Sub_ID = " + j;
+			  "and Rule_Sub_ID = " + j + " " +
+			  "and Rule_Line_ID = " + line_number;
 		
 		//System.out.println(SQL);
 		return SQL;

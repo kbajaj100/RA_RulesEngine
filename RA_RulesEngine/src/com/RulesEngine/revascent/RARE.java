@@ -40,7 +40,8 @@ public class RARE {
 		createRuleList();
 		
 		getRunID();
-					
+		
+		System.out.println("Run ID is: " + RUN_ID);
 		for (int i = 0; i< numrules; ++i){
 			myLR[i] = new LeftRule();
 			myLR[i].setRUN_ID(RUN_ID);
@@ -63,6 +64,8 @@ public class RARE {
 		// TODO Auto-generated method stub
 		
 		int right_rule_type = 0;
+		int line_number = 0;
+		int line_count = 0;
 		
 		myRight[i].setRuleID(RuleList.get(i));	
 		//For each rule, get the # of sub rules
@@ -76,21 +79,35 @@ public class RARE {
 		//j is the counter for the sub rules
 		for(int j = 1; j <= myconn.execSQL_returnint(myRight[i].getSQL_subrulecount()); ++j)
 		{
-			SQL = myRight[i].getSQL_RightRuleTypeID(j);
-			right_rule_type = myconn.execSQL_returnint(SQL);
-			myRight[i].setRightRuleTypeID(right_rule_type);
+			//Set the Sub Rule ID
+			myRight[i].setRight_sub(j);
 			
-			// get the search type
+			//Set the Right Rule Type ID
+			myRight[i].setRightRuleTypeID(myconn.execSQL_returnint(myRight[i].getSQL_RightRuleTypeID(j)));
+			
+			//Set the number of lines in the Sub Rule
+			line_count = myconn.execSQL_returnint(myRight[i].getSQL_Rule_Line_Count(j));
+			System.out.println("line_Count is : " + line_count);
+			myRight[i].setSub_Line_Count(line_count);
+			
+			//Set the starting line number for the sub rule
+			line_number = myconn.execSQL_returnint(myRight[i].getSQL_Rule_Line_ID(j));
+			myRight[i].setRule_Line_ID(line_number);
+			
+			//Set the search type
 			myRight[i].setSearch_Type(myconn.execSQL_returnString(myRight[i].getSQL_searchtype(j)));
+					
+			//Set the value of the search code in that cell of the array for that Rule, Sub Rule, Line
+			myRight[i].setCode(myconn.execSQL_returnString(myRight[i].getSQL_code(j, line_number)));
 			
-			//set the value of the code in that cell of the array for that Rule, Sub Rule
-			myRight[i].setCode(myconn.execSQL_returnString(myRight[i].getSQL_code(j)));
+			//Set the value of the base rule
+			myRight[i].setBase_Rule_Type_ID(myconn.execSQL_returnint(myRight[i].getSQL_Base_Rule(j)));
 			
 			SQL = "insert into " + myDBindex.Flagged_Table + 
-				  "(CLM_ID, CPT_CODE, Rule_ID, Sub_Rule_ID, RUN_ID)" +
-					myRight[i].getSQL_Rule(j, claims) ;
-			
+						  "(CLM_ID, CPT_CODE, Rule_ID, Sub_Rule_ID, RUN_ID)" + myRight[i].getSQL_Rule(j, claims);
+					
 			myconn.execSQL(SQL);
+			
 		}
 		
 		return claims;
@@ -201,7 +218,7 @@ public class RARE {
 	private void createRuleList() {
 		// TODO Auto-generated method stub
 		
-		SQL = "select cast(Rule_ID as int)" + 
+		SQL = "select cast(Rule_ID as int) " + 
 			  "from " + myDBindex.getRS_Index() + " " + 
 			  "where Status = 'A'";
 		
