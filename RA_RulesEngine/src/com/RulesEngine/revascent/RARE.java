@@ -60,7 +60,7 @@ public class RARE {
 		RUN_ID = (myconn.execSQL_returnint(SQL));
 	}
 
-	private String getRightClaimList(int i, String claims) {
+	private String getRightClaimList(int i, String claims) throws FileNotFoundException, IOException, SQLException {
 		// TODO Auto-generated method stub
 		
 		int right_rule_type = 0;
@@ -101,7 +101,7 @@ public class RARE {
 			myRight[i].setCode(myconn.execSQL_returnString(myRight[i].getSQL_code(j, line_number)));
 			
 			//Set the value of the base rule
-			myRight[i].setBase_Rule_Type_ID(myconn.execSQL_returnint(myRight[i].getSQL_Base_Rule(j)));
+			//myRight[i].setBase_Rule_Type_ID(myconn.execSQL_returnint(myRight[i].getSQL_Base_Rule(j)));
 			
 			SQL = "insert into " + myDBindex.Flagged_Table + 
 						  "(CLM_ID, CPT_CODE, Rule_ID, Sub_Rule_ID, RUN_ID)" + myRight[i].getSQL_Rule(j, claims);
