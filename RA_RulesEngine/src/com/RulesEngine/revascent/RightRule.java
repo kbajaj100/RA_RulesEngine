@@ -145,7 +145,7 @@ public class RightRule {
 	
 	public String getSQL_subrulecount(){
 		
-		SQL = "select count(Rule_Sub_ID) count " +
+		SQL = "select count(distinct Rule_Sub_ID) count " +
 			  "from " + myRRindex.getRS() + " " +
 			  "where Rule_ID = " + RuleID;
 		
@@ -177,15 +177,15 @@ public class RightRule {
 		// TODO Auto-generated method stub
 		
 		if (RightRuleTypeID == 1)
-			SQL = getSQL_Rule_RT1(j, claims);
+			SQL = getSQL_Rule_RT1(j, claims, Rule_Line_ID);
 		else if (RightRuleTypeID == 2)
-			SQL = getSQL_Rule_RT2(j, claims);
+			SQL = getSQL_Rule_RT2(j, claims, Rule_Line_ID);
 		else if (RightRuleTypeID == 3)
-			SQL = getSQL_Rule_RT3(j, claims);
+			SQL = getSQL_Rule_RT3(j, claims, Rule_Line_ID);
 		else if (RightRuleTypeID == 5)
-			SQL = getSQL_Rule_RT5(j, claims);
+			SQL = getSQL_Rule_RT5(j, claims, Rule_Line_ID);
 		else if (RightRuleTypeID == 10)
-			SQL = getSQL_Rule_RT10(j, claims);
+			SQL = getSQL_Rule_RT10(j, claims, Rule_Line_ID);
 		else if (RightRuleTypeID == 11)
 			SQL = getSQL_Rule_RT11(j, claims);
 		
@@ -200,9 +200,10 @@ public class RightRule {
 		
 		int base, checker = Rule_Line_ID;
 		
-		String SQL_11 = "select q" + checker + ".CLM_ID, q" + checker +".Code, q" + checker +".RuleID, q"+ checker + 
+		String SQL_11 = " select q" + checker + ".CLM_ID, q" + checker +".Code, q" + checker +".RuleID, q"+ checker + 
 						".SubID, q" + checker + ".RunID from (";
 		
+		//checker is counter for line id
 		for(; checker < (Sub_Line_Count + Rule_Line_ID); ++checker)
 		{
 			//get the base rule for this line
@@ -211,15 +212,15 @@ public class RightRule {
 			System.out.println("base rule_id is: " + base);
 			
 			if (base == 1)
-				SQL = getSQL_Rule_RT1(j, claims);
+				SQL = getSQL_Rule_RT1(j, claims, checker);
 			else if (base == 2)
-				SQL = getSQL_Rule_RT2(j, claims);
+				SQL = getSQL_Rule_RT2(j, claims, checker);
 			else if (base == 3)
-				SQL = getSQL_Rule_RT3(j, claims);
+				SQL = getSQL_Rule_RT3(j, claims, checker);
 			else if (base == 5)
-				SQL = getSQL_Rule_RT5(j, claims);
+				SQL = getSQL_Rule_RT5(j, claims, checker);
 			else if (base == 10)
-				SQL = getSQL_Rule_RT10(j, claims);
+				SQL = getSQL_Rule_RT10(j, claims, checker);
 			
 			// create SQL to join the queries - this will be challenging
 			if (checker == Rule_Line_ID)
@@ -233,7 +234,7 @@ public class RightRule {
 		
 		return SQL_11;
 	}
-	private String getSQL_Rule_RT10(int j, String claims) {
+	private String getSQL_Rule_RT10(int j, String claims, int line) {
 		// TODO Auto-generated method stub
 		SQL = "select o11.CLM_ID, '" + Code + " ' as Code," + RuleID + " as RuleID," + j + " as SubID," + RUN_ID + " as RunID " +
 			  "from " +
@@ -257,21 +258,21 @@ public class RightRule {
 		return SQL;
 	}
 	
-	private String getSQL_Rule_RT5(int j, String claims2) {
+	private String getSQL_Rule_RT5(int j, String claims, int line) {
 		// TODO Auto-generated method stub
 		
 		
 		return SQL;
 	}
 	
-	private String getSQL_Rule_RT3(int j, String claims) {
+	private String getSQL_Rule_RT3(int j, String claims, int line) {
 		
 		
 		
 		return null;
 	}
 	
-	private String getSQL_Rule_RT2(int j, String claims) {
+	private String getSQL_Rule_RT2(int j, String claims, int line) {
 		
 		SQL = "select a11.CLM_ID, '" + Code + " ' as Code," + RuleID + " as RuleID," + j + " as SubID," + RUN_ID + " as RunID " +
 			  //"select a11.CLM_ID, '" + Code + "'," + RuleID + "," + j + "," + RUN_ID + " " +
@@ -296,12 +297,13 @@ public class RightRule {
 			  "(select Missing_Value " +
 			  "from " + myRRindex.getRS() + " " +  
 			  "where Rule_ID = " + RuleID + " " + 
+			  "and Rule_Line_ID = " + line + " " +
 			  "and Rule_Sub_ID = " + j + ")) ";
 		
 		return SQL;
 	}
 	
-	private String getSQL_Rule_RT1(int j, String claims) {
+	private String getSQL_Rule_RT1(int j, String claims, int line) {
 		
 						//CLM_ID, CPT_CODE, 	RULE_ID, SUB_RULE_ID, RUN_ID
 		SQL = "select o11.CLM_ID, '" + Code + " ' as Code," + RuleID + " as RuleID," + j + " as SubID," + RUN_ID + " as RunID " +

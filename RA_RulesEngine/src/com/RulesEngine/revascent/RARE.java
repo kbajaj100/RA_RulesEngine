@@ -67,9 +67,14 @@ public class RARE {
 		int line_number = 0;
 		int line_count = 0;
 		
+		System.out.println();
+		
+		
 		myRight[i].setRuleID(RuleList.get(i));	
 		//For each rule, get the # of sub rules
 		myRight[i].setRight_sub_count(myconn.execSQL_returnint(myRight[i].getSQL_subrulecount()));
+		
+		System.out.println("Number of sub rules is: " + myRight[i].getRight_sub_count());
 		
 		//for loop, get the rule type for each sub rule
 		//get the SQL for the sub rule
@@ -77,10 +82,11 @@ public class RARE {
 		//loop
 		
 		//j is the counter for the sub rules
-		for(int j = 1; j <= myconn.execSQL_returnint(myRight[i].getSQL_subrulecount()); ++j)
+		for(int j = 1; j <= myRight[i].getRight_sub_count(); ++j)
 		{
 			//Set the Sub Rule ID
 			myRight[i].setRight_sub(j);
+			System.out.println("Sub RUle ID is: " + j);
 			
 			//Set the Right Rule Type ID
 			myRight[i].setRightRuleTypeID(myconn.execSQL_returnint(myRight[i].getSQL_RightRuleTypeID(j)));
@@ -106,6 +112,7 @@ public class RARE {
 			SQL = "insert into " + myDBindex.Flagged_Table + 
 						  "(CLM_ID, CPT_CODE, Rule_ID, Sub_Rule_ID, RUN_ID)" + myRight[i].getSQL_Rule(j, claims);
 					
+			System.out.println("insert SQL is: " + SQL);
 			myconn.execSQL(SQL);
 			
 		}

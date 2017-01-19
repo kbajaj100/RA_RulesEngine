@@ -88,7 +88,7 @@ public class LeftRule {
 
 	public void setLeft_sub_count(int left_sub_count) {
 		this.left_sub_count = left_sub_count;
-		System.out.println("Number of Sub Rules for " + RuleID + " is: " + this.left_sub_count);
+		//System.out.println("Number of Sub Rules for " + RuleID + " is: " + this.left_sub_count);
 	}
 
 	
@@ -99,7 +99,7 @@ public class LeftRule {
 			  "where Rule_ID = " + RuleID + " " + 
 			  "and Left_Sub_Rule_ID = " + j;
 		
-		System.out.println(SQL);
+		//System.out.println(SQL);
 		return SQL;
 	}
 	
@@ -129,7 +129,7 @@ public class LeftRule {
 		if (j==3)
 			setMyconn();
 		
-		System.out.println("Left Rule Type for RuleID: " + RuleID + " is: " + LeftRuleTypeID);
+		//System.out.println("Left Rule Type for RuleID: " + RuleID + " is: " + LeftRuleTypeID);
 	}
 
 	public String getSQL_Rule(int j) {
@@ -195,7 +195,7 @@ public class LeftRule {
 		"having COUNT(CPT_CODE) = 1) a12 on " +
 		"(a11.CLM_ID = a12.CLM_ID)"; 
 		
-		System.out.println(SQL);
+		//System.out.println(SQL);
 		return SQL;
 	}
 
@@ -247,7 +247,7 @@ public class LeftRule {
 				  ")" + " " + 
 				  "group by CLM_ID";  
 			
-		System.out.println(SQL_occur);
+		//System.out.println(SQL_occur);
 		myconn.execSQL(SQL_occur);
 	}
 	
