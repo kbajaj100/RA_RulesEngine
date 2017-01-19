@@ -9,7 +9,7 @@ public class DBRun {
 		String SQL;
 		
 		SQL = "select (case when max(RUN_ID) is null then 1 else (max(RUN_ID)+1) end) count " +
-			  "from " + myindex.getLeft_Flag();
+			  "from " + myindex.getFlagged_Table();
 		
 		return SQL;
 	}

@@ -235,7 +235,7 @@ public class LeftRule {
 		String SQL_occur;
 		
 		SQL_occur = "insert into " + myLRindex.getLeft_Occur() + " " + 
-				  "(Run_ID, CLM_ID, RULE_ID, COUNT_OCCUR)" + " " +
+				  "(Run_ID, RULE_ID, CLM_ID, COUNT_OCCUR)" + " " +
 				  "select " + RUN_ID + "," + RuleID +",CLM_ID, COUNT(distinct CPT_CODE) count " + 
 				  "from " + myLRindex.getClaims_Table() + " " + 
 				  "where CPT_CODE in " +  
