@@ -141,17 +141,23 @@ public class LeftRule {
 			SQL = getSQL_Rule_RT1(j);
 		else if (LeftRuleTypeID == 2)
 			SQL = getSQL_Rule_RT2(j);
-		else if (LeftRuleTypeID  == 3){
+		else if (LeftRuleTypeID  == 3)
 			SQL = getSQL_Rule_RT3(j);
-			
-		}
+		else if (LeftRuleTypeID  == 6)
+				SQL = getSQL_Rule_RT3(j);
+		
 		
 		return SQL;
 	}
 
 	private String getSQL_Rule_RT3(int j) {
 		
-		SQL = "select CLM_ID, COUNT(distinct CPT_CODE) count " + 
+		if (LeftRuleTypeID  == 3)
+			SQL = "select CLM_ID, COUNT(distinct CPT_CODE) count1 ";
+		else 
+			SQL =  "select CLM_ID, COUNT(CPT_CODE) count1 ";
+		
+		SQL = SQL + 
 			  "from " + myLRindex.getClaims_Table() + " " + 
 			  "where CPT_CODE in " +  
 			  "(" + 
@@ -236,7 +242,9 @@ public class LeftRule {
 		
 		SQL_occur = "insert into " + myLRindex.getLeft_Occur() + " " + 
 				  "(Run_ID, RULE_ID, CLM_ID, COUNT_OCCUR)" + " " +
-				  "select " + RUN_ID + "," + RuleID +",CLM_ID, COUNT(distinct CPT_CODE) count " + 
+				  "select " + RUN_ID + "," + RuleID +",a11.CLM_ID, a11.count1 " +
+				  "from (" +  SQL + ") a11"; 
+				  /*"select " + RUN_ID + "," + RuleID +",CLM_ID, COUNT(distinct CPT_CODE) count " + 
 				  "from " + myLRindex.getClaims_Table() + " " + 
 				  "where CPT_CODE in " +  
 				  "(" + 
@@ -245,9 +253,9 @@ public class LeftRule {
 				  "where Rule_ID = " + RuleID + " " + 
 				  "and Left_Sub_Rule_ID = " + j + " " +
 				  ")" + " " + 
-				  "group by CLM_ID";  
+				  "group by CLM_ID";*/  
 			
-		//System.out.println(SQL_occur);
+		System.out.println(SQL_occur);
 		myconn.execSQL(SQL_occur);
 	}
 	
