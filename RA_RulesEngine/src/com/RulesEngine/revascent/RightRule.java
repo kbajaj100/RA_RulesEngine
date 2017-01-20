@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import com.sun.rowset.CachedRowSetImpl;
+
 public class RightRule {
 
 	String SQL;
@@ -114,6 +116,12 @@ public class RightRule {
 	}
 	public void setRUN_ID(int rUN_ID) {
 		RUN_ID = rUN_ID;
+	}
+	
+	private void init_dbconn() throws FileNotFoundException, IOException, SQLException {
+		// TODO Auto-generated method stub
+		myconn = new DBConn();
+		myconn.setDBConn("C:/Props/RulesEngine/DBprops.properties");
 	}
 	
 	public String getSQL_RelNext(int j, int line){
@@ -261,8 +269,7 @@ public class RightRule {
 	private String getSQL_Rule_RT11(int j, String claims) throws FileNotFoundException, IOException, SQLException {
 		// TODO Auto-generated method stub
 		
-		myconn = new DBConn();
-		myconn.setDBConn("C:/Props/RulesEngine/DBprops.properties");
+		init_dbconn();
 		
 		int base, checker = Rule_Line_ID;
 		
@@ -308,6 +315,7 @@ public class RightRule {
 		
 		return SQL_11;
 	}
+	
 	private String getSQL_Rule_RT10(int j, String claims, int line) {
 		// TODO Auto-generated method stub
 		SQL = "select o11.CLM_ID, '" + Code + " ' as Code," + RuleID + " as RuleID," + j + " as SubID," + RUN_ID + " as RunID " +
@@ -339,11 +347,173 @@ public class RightRule {
 		return SQL;
 	}
 	
-	private String getSQL_Rule_RT3(int j, String claims, int line) {
+	private String getSQL_Rule_RT3(int j, String claims, int line) throws FileNotFoundException, IOException, SQLException {
 		
+		String[] search_types = create_Searchtype_arr(j);
+		int min_line, line_count, rel;
+		String SQL_clause = "(";
+			
+		// This will run for each search type
+		for (int i = 0; i <Search_type_count; ++i){
+			
+			System.out.println("Search type count is: " + Search_type_count);
+			// Get the min Rule Line ID for the first search type
+			SQL = "select min(Rule_Line_ID) count " + 
+				  "from " + myRRindex.getRS() + " " +  
+				  "where Rule_ID =" + RuleID + " " + 
+				  "and Rule_Sub_ID = " + j + " " + 
+				  "and Search_Type = '" + search_types[i] + "'";
+			
+			min_line = myconn.execSQL_returnint(SQL);
+			
+			SQL = "select count(Rule_Line_ID) count " + 
+					  "from " + myRRindex.getRS() + " " +  
+					  "where Rule_ID =" + RuleID + " " + 
+					  "and Rule_Sub_ID = " + j + " " + 
+					  "and Search_Type = '" + search_types[i] + "'";			
+			
+			//Get the number of lines for that search type in the rule
+			line_count = myconn.execSQL_returnint(SQL);
+			
+			System.out.println("Min Line is: " + min_line);
+			System.out.println("Line count for the search code is: " + line_count);
+			//SQL_clause = "(";
+			
+			for(int checker = min_line; checker < (min_line + line_count); ++checker){
+			
+				System.out.println("Line is: " + checker);
+				System.out.println("Line count for the search code is: " + line_count);
+				System.out.println("Search type is: " + search_types[i]);
+				
+				if (search_types[i].equals("C")){
+					SQL_clause = SQL_clause + 
+								 "CPT_CODE in ( " +
+								 "select Rule_Sub_Primary_Code1 " +
+								 "from " + myRRindex.getRS() + " " + 
+								 "where Rule_ID = " + RuleID +" " + 
+								 "and Rule_Sub_ID = " + j + " " +
+								 "and Search_Type = " + "'C') ";
+					checker = checker + line_count;
+					System.out.println(SQL_clause);
+				}
+				else if (search_types[i].equals("L")){
+					
+					//get the search code
+					SQL = "select Rule_Sub_Primary_Code1 code " +
+							 "from " + myRRindex.getRS() + " " + 
+							 "where Rule_ID = " + RuleID +" " + 
+							 "and Rule_Sub_ID = " + j + " " +
+							 "and Search_Type = " + "'L' "+
+							 "and Rule_Line_ID = " + checker;
+					
+					String code = myconn.execSQL_returnString(SQL);
+					System.out.println("Search type Code is: " + code);
+					
+					SQL_clause = SQL_clause + "CPT_CODE like ('" + code + "%') ";
+					System.out.println(SQL_clause);
+				}
+				else if (search_types[i].equals("R")){
+					
+					int code_id1, code_id2;
+					System.out.println("search type is: " + search_types[i]);
+					
+					SQL = "select CPT_CODE_ID count " +
+						  "from " + myRRindex.getClaims_Table() + " a11 " + 
+						  "join " + myRRindex.getRS() + " a12 on " +
+						  "(a11.CPT_CODE = a12.Rule_Sub_Primary_Code1) " +
+						  "where a12.Rule_ID = " + RuleID + " " + 
+						  "and a12.Rule_Sub_ID = " + j + " " +
+						  "and a12.Search_Type = " + "'R' "+
+						  "and a12.Rule_Line_ID = " + checker;
+					
+					code_id1 = myconn.execSQL_returnint(SQL);
+
+					SQL = 	  "select CPT_CODE_ID count " +
+							  "from " + myRRindex.getClaims_Table() + " a11 " + 
+							  "join " + myRRindex.getRS() + " a12 on " +
+							  "(a11.CPT_CODE = a12.Missing_Value) " +
+							  "where a12.Rule_ID = " + RuleID + " " + 
+							  "and a12.Rule_Sub_ID = " + j + " " +
+							  "and a12.Search_Type = " + "'R' "+
+							  "and a12.Rule_Line_ID = " + checker;
+					
+					code_id2 = myconn.execSQL_returnint(SQL);
+					
+					SQL_clause = SQL_clause + "CPT_CODE_ID between " + code_id1 + " and " + code_id2;
+					System.out.println(SQL_clause);
+				}
+				
+				SQL =    "select REL_NEXT count " +
+						 "from " + myRRindex.getRS() + " " + 
+						 "where Rule_ID = " + RuleID +" " + 
+						 "and Rule_Sub_ID = " + j + " " +
+						 "and Rule_Line_ID = " + checker;
+				
+				rel = myconn.execSQL_returnint(SQL);
+				System.out.println(rel);
+				
+				if (rel == 0)
+					SQL_clause = SQL_clause + ") ";
+				else if (rel == 1)
+					SQL_clause = SQL_clause + " and ";
+				else if (rel ==2)
+					SQL_clause = SQL_clause + " or ";
+				
+				System.out.println(SQL_clause);
+				
+			}
+			
+		}
 		
+		SQL_clause =SQL_clause + "and CLM_ID in (" + claims + ") group by CLM_ID"; 
+		System.out.println("Final SQL_Clause is: " + SQL_clause);
 		
-		return null;
+		//This is just for testing
+		SQL = "select CLM_ID, count(CPT_CODE) count1" + " " + 
+			  "from " + myRRindex.getClaims_Table() + " " +
+			  "where " + SQL_clause;
+		
+		System.out.println(SQL);
+		// Testing section ends
+		
+		return SQL_clause;
+	}
+	
+	private String[] create_Searchtype_arr(int j) throws FileNotFoundException, IOException, SQLException {
+		// TODO Auto-generated method stub
+
+		init_dbconn();
+		String[] search_types = new String[Search_type_count];
+		
+		SQL = "select distinct rtrim(Search_type) code " +
+			  "from " + myRRindex.getRS() + " " + 
+			  "where Rule_ID =" + RuleID + " " + 
+			  "and Rule_Sub_ID = " + j + " " +
+			  "order by rtrim(Search_type)";
+	
+		System.out.println(SQL);
+		int i = 0;
+		
+		if(!myconn.execSQL_crs(SQL))
+			System.exit(1);
+		
+	    try {
+
+	    	CachedRowSetImpl crs = new CachedRowSetImpl();
+	    	crs = myconn.getRowSet();
+
+	    	while (crs.next()) {	    			
+	    		search_types[i] = crs.getString(1);
+	    		++i;
+	    		//System.out.println("search type is: " + search_types[i]);
+	    	}
+
+	    } catch (SQLException se){
+	    	se.printStackTrace();
+	    }
+		
+		return search_types;
+		
 	}
 	
 	private String getSQL_Rule_RT2(int j, String claims, int line) {
