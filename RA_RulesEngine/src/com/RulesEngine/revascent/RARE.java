@@ -102,7 +102,10 @@ public class RARE {
 			
 			//Set the search type
 			myRight[i].setSearch_Type(myconn.execSQL_returnString(myRight[i].getSQL_searchtype(j)));
-					
+			
+			//Set the search type count
+			myRight[i].setSearch_type_count(myconn.execSQL_returnint(myRight[i].getSQL_searchtypecount(j)));
+			
 			//Set the value of the search code in that cell of the array for that Rule, Sub Rule, Line
 			myRight[i].setCode(myconn.execSQL_returnString(myRight[i].getSQL_code(j, line_number)));
 			

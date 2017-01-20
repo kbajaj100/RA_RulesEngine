@@ -12,6 +12,7 @@ public class RightRule {
 	String Code;
 	
 	String Search_Type;
+	int Search_type_count;
 	int right_sub_count;
 	int right_sub;
 	int RuleID;
@@ -30,6 +31,12 @@ public class RightRule {
 	static String dbUrl;
 	
 	
+	public int getSearch_type_count() {
+		return Search_type_count;
+	}
+	public void setSearch_type_count(int search_type_count) {
+		Search_type_count = search_type_count;
+	}
 	public int getSub_Line_Count() {
 		return Sub_Line_Count;
 	}
@@ -109,9 +116,16 @@ public class RightRule {
 		RUN_ID = rUN_ID;
 	}
 	
-	/*public String getSQL_RelNext(int j){
+	public String getSQL_RelNext(int j, int line){
 		
-	}*/
+		SQL = "select REL_NEXT count " +
+			  "from " + myRRindex.getRS() + " " + 
+			  "where Rule_ID =" + RuleID + " " + 
+			  "and Rule_Sub_ID = "  + j + " " +
+			  "and Rule_line_ID = " + line;
+		
+		return SQL;
+	}
 	
 	public String getSQL_Base_Rule(int j, int line){
 		
@@ -166,6 +180,16 @@ public class RightRule {
 	public String getSQL_searchtype(int j) {
 		// TODO Auto-generated method stub
 		SQL = "select Search_Type code " +
+			  "from " + myRRindex.getRS() + " " +
+			  "where Rule_ID = " + RuleID + " " +
+			  "and Rule_Sub_ID = " + j;
+		
+		return SQL;
+	}
+	
+	public String getSQL_searchtypecount(int j) {
+		// TODO Auto-generated method stub
+		SQL = "select count(distinct Search_Type) count " +
 			  "from " + myRRindex.getRS() + " " +
 			  "where Rule_ID = " + RuleID + " " +
 			  "and Rule_Sub_ID = " + j;
@@ -242,8 +266,12 @@ public class RightRule {
 		
 		int base, checker = Rule_Line_ID;
 		
+		int Rel = myconn.execSQL_returnint(getSQL_RelNext(j, checker));;
+		
+		
 		String SQL_11 = " select q" + checker + ".CLM_ID, q" + checker +".Code, q" + checker +".RuleID, q"+ checker + 
 						".SubID, q" + checker + ".RunID from (";
+		
 		
 		//checker is counter for line id
 		for(; checker < (Sub_Line_Count + Rule_Line_ID); ++checker)
@@ -266,13 +294,15 @@ public class RightRule {
 			else if (base == 12)
 				SQL = getSQL_Rule_RT12(j, claims, checker);
 			
-			// create SQL to join the queries - this will be challenging
-			if (checker == Rule_Line_ID)
-				SQL_11 = SQL_11 + SQL + ") q" + checker ;
-			else 
-				SQL_11 = SQL_11 + " join (" + SQL + ") q" + checker + 
-						 " on (q" + checker + ".CLM_ID = q" + (checker-1) + ".CLM_ID) ";
-			
+			// Rel is currently 'AND'. The logic will need to be re-thought/ changed to allow 'OR' 
+			if (Rel ==1){
+				System.out.println("REL_NEXT is: " + Rel);
+				if (checker == Rule_Line_ID)
+					SQL_11 = SQL_11 + SQL + ") q" + checker ;
+				else 
+					SQL_11 = SQL_11 + " join (" + SQL + ") q" + checker + 
+							 " on (q" + checker + ".CLM_ID = q" + (checker-1) + ".CLM_ID) ";
+			}
 			System.out.println("SQL11 is: " + SQL_11);	
 		}
 		
