@@ -186,8 +186,7 @@ public class LeftRule {
 		"where Rule_ID = " + RuleID + " " +  
 		"and Left_Sub_Rule_ID = " + j + " " +  
 		"and Rule_Left_Line_ID = 1) " +
-		"group by CLM_ID " +
-		"having COUNT(CPT_CODE) = 1) a11 " +
+		") a11 " +
 		"join " +
 		"(select CLM_ID " +
 		"from " + myLRindex.getClaims_Table() + " " +
@@ -197,11 +196,10 @@ public class LeftRule {
 		"where Rule_ID = " + RuleID + " " +  
 		"and Left_Sub_Rule_ID = " + j + " " +  
 		"and Rule_Left_Line_ID = 2) " +
-		"group by CLM_ID " +
-		"having COUNT(CPT_CODE) = 1) a12 on " +
+		") a12 on " +
 		"(a11.CLM_ID = a12.CLM_ID)"; 
 		
-		//System.out.println(SQL);
+		System.out.println("Left SQL for Rule Type 2 is: " + SQL);
 		return SQL;
 	}
 
@@ -219,7 +217,7 @@ public class LeftRule {
 				"and Left_Sub_Rule_ID = " + j + " " +  
 				") " + 
 				"group by CLM_ID " + 
-				"having COUNT(CPT_CODE) = 2)";
+				"having COUNT(CPT_CODE) >= 2)";
 		
 		return SQL;
 	}

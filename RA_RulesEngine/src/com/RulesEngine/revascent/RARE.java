@@ -120,7 +120,7 @@ public class RARE {
 				
 		}
 		
-		myconn.execSQL("drop table "  + myDBindex.getRight_3());
+		myconn.execSQL("IF OBJECT_ID('" + myDBindex.getRight_3() + "', 'U') IS NOT NULL begin drop table "  + myDBindex.getRight_3() + " end");
 		return claims;
 	}
 
