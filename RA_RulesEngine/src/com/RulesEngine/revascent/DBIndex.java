@@ -6,10 +6,20 @@ public class DBIndex {
 	String Flagged_Table = "rcmods.FACT_GIC_STG"; 
 	String Left_Flag = "rcmods.FACT_GIC_STG_LEFT";
 	String Left_Occur = "rcmods.FACT_GIC_OCCURENCE";
-
+	String Right_3 = "rcmods.rt3_temp";
+	
 	String RS_Index = "rcmods.Rule_sheet_Index";
 	String RS = "rcmods.Rule_Sheet";
 	String RS_Left = "rcmods.Rule_Sheet_Left";
+
+	
+	public String getRight_3() {
+		return Right_3;
+	}
+
+	public void setRight_3(String right_3Temp) {
+		Right_3 = right_3Temp;
+	}
 
 	public String getLeft_Occur() {
 		return Left_Occur;

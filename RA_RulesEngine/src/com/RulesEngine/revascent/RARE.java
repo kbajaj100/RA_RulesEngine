@@ -117,9 +117,10 @@ public class RARE {
 					
 			System.out.println("insert SQL is: " + SQL);
 			myconn.execSQL(SQL);
-			
+				
 		}
 		
+		myconn.execSQL("drop table "  + myDBindex.getRight_3());
 		return claims;
 	}
 
