@@ -69,7 +69,6 @@ public class RARE {
 		
 		System.out.println();
 		
-		
 		myRight[i].setRuleID(RuleList.get(i));	
 		//For each rule, get the # of sub rules
 		myRight[i].setRight_sub_count(myconn.execSQL_returnint(myRight[i].getSQL_subrulecount()));

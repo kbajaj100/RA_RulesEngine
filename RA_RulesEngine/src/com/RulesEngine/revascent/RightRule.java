@@ -355,7 +355,8 @@ public class RightRule {
 		
 		SQL = "insert into " + myRRindex.getRight_3() + 
 			  " (CLM_ID, CPT_COUNT, Rule_ID)" + " " + SQL;
-			  
+		
+		System.out.println("insert for RT3 temp is: " + SQL);
 		myconn.execSQL(SQL);
 		
 		SQL = "select a11.CLM_ID, '' as Code," + RuleID + " as RuleID," + j + " as SubID," + RUN_ID + " as RunID " +
@@ -363,7 +364,7 @@ public class RightRule {
 			  "join " + myRRindex.getLeft_Occur() + " a12 on " +
 			  "(a11.CLM_ID = a12.CLM_ID) " + 
 			  "where RUN_ID = " + RUN_ID + " " +
-			  "and a11.CPT_COUNT < a12.COUNT_OCCUR " + 
+			  "and a11.CPT_COUNT > a12.COUNT_OCCUR " + 
 			  "and a12.Rule_ID = " + RuleID + " " + 
 			  "and a12.Rule_ID = a11.Rule_ID";
 			  
