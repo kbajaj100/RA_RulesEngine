@@ -138,14 +138,17 @@ public class LeftRule {
 		//Get the LeftRuleTypeID
 		
 		if (LeftRuleTypeID == 1)
-			SQL = getSQL_Rule_RT1(j);
+			SQL = getSQL_Rule_RT1(j," >= 2");
 		else if (LeftRuleTypeID == 2)
 			SQL = getSQL_Rule_RT2(j);
 		else if (LeftRuleTypeID  == 3)
 			SQL = getSQL_Rule_RT3(j);
 		else if (LeftRuleTypeID  == 6)
 				SQL = getSQL_Rule_RT3(j);
-		
+		else if (LeftRuleTypeID == 7)
+			SQL = getSQL_Rule_RT1(j," = 2");
+		else if (LeftRuleTypeID == 8)
+			SQL = getSQL_Rule_RT1(j," = 1");
 		
 		return SQL;
 	}
@@ -203,21 +206,27 @@ public class LeftRule {
 		return SQL;
 	}
 
-	private String getSQL_Rule_RT1(int j) {
+	private String getSQL_Rule_RT1(int j, String count_code) {
 		
-		SQL = 	"select distinct CLM_ID CLM_ID " + 
-				"from " + myLRindex.getClaims_Table() + " " +
-				"where CLM_ID in " +
-				"(select CLM_ID " + 
-				"from " + myLRindex.getClaims_Table() + " " + 
-				"where CPT_CODE = " +  
-				"(select distinct Rule_Primary_Code " + 
-				"from " + myLRindex.getRS_Left() + " " +  
-				"where Rule_ID = " + RuleID + " " +  
-				"and Left_Sub_Rule_ID = " + j + " " +  
-				") " + 
-				"group by CLM_ID " + 
-				"having COUNT(CPT_CODE) >= 2)";
+		if (LeftRuleTypeID == 1)
+			SQL = 	"select distinct CLM_ID CLM_ID " ; 
+		else if (LeftRuleTypeID == 7)
+			SQL = "select distinct CLM_ID CLM_ID, 2 " ;
+		else if (LeftRuleTypeID == 8)
+			SQL = "select distinct CLM_ID CLM_ID, 1 " ;
+					
+		SQL = SQL +	"from " + myLRindex.getClaims_Table() + " " +
+					"where CLM_ID in " +
+					"(select CLM_ID " + 
+					"from " + myLRindex.getClaims_Table() + " " + 
+					"where CPT_CODE = " +  
+					"(select distinct Rule_Primary_Code " + 
+					"from " + myLRindex.getRS_Left() + " " +  
+					"where Rule_ID = " + RuleID + " " +  
+					"and Left_Sub_Rule_ID = " + j + " " +  
+					") " + 
+					"group by CLM_ID " + 
+					"having COUNT(CPT_CODE) " + count_code + ")";
 		
 		return SQL;
 	}

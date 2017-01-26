@@ -29,7 +29,7 @@ public class RARE {
 		// TODO Auto-generated method stub
 
 		initiateDBConn();
-		String Claims;
+		String Claims = "";
 		
 		numrules = getnumrules();
 		myLR = new LeftRule[numrules];
@@ -43,13 +43,17 @@ public class RARE {
 		
 		System.out.println("Run ID is: " + RUN_ID);
 		for (int i = 0; i< numrules; ++i){
+			
+			Claims = "";
 			myLR[i] = new LeftRule();
 			myLR[i].setRUN_ID(RUN_ID);
 			Claims = getLeftClaimList(i);
 			
-			myRight[i] = new RightRule();
-			myRight[i].setRUN_ID(RUN_ID);
-			Claims = getRightClaimList(i, Claims);
+			if (!Claims.equals("")){
+				myRight[i] = new RightRule();
+				myRight[i].setRUN_ID(RUN_ID);
+				Claims = getRightClaimList(i, Claims);
+			}
 		}		
 	}
 

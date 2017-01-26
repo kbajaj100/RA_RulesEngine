@@ -234,6 +234,21 @@ public class RightRule {
 			SQL = getSQL_Rule_RT11(j, claims);
 		else if (RightRuleTypeID == 12)
 			SQL = getSQL_Rule_RT12(j, claims, Rule_Line_ID);
+		else if (RightRuleTypeID == 13)
+			SQL = getSQL_Rule_RT15(j, claims, Rule_Line_ID);
+		
+		return SQL;
+	}
+	
+	private String getSQL_Rule_RT15(int j, String claims, int line) throws FileNotFoundException, IOException, SQLException {
+		
+		init_dbconn();
+		
+		SQL = getClaims_and_CountsRT3(j, claims, line);
+		
+		String SQL1 = "select distinct CLM_ID from (" + SQL + ")";
+
+		
 		
 		return SQL;
 	}
@@ -312,7 +327,7 @@ public class RightRule {
 			}
 			System.out.println("SQL11 is: " + SQL_11);	
 		}
-		
+
 		return SQL_11;
 	}
 	
@@ -366,7 +381,14 @@ public class RightRule {
 			  "where RUN_ID = " + RUN_ID + " " +
 			  "and a11.CPT_COUNT > a12.COUNT_OCCUR " + 
 			  "and a12.Rule_ID = " + RuleID + " " + 
-			  "and a12.Rule_ID = a11.Rule_ID";
+			  "and a12.Rule_ID = a11.Rule_ID" + " " +
+			  "union " +
+			  "select CLM_ID, '' as Code," + RuleID + " as RuleID," + j + " as SubID," + RUN_ID + " as RunID " +
+			  "from " + myRRindex.getLeft_Occur() + " " +
+			  "where Run_ID = " + RUN_ID + " " +
+			  "and Rule_ID = " + RuleID + " " + 
+			  "and CLM_ID not in " +
+			  "(select distinct CLM_ID from " + myRRindex.getRight_3() + " where Rule_ID = " + RuleID + ") ";
 			  
 		System.out.println(SQL);
 				
@@ -374,7 +396,7 @@ public class RightRule {
 	}
 	
 	private String getClaims_and_CountsRT3(int j, String claims, int line) throws FileNotFoundException, IOException, SQLException {
-		// TODO Auto-generated method stub
+		
 		// Get the claims and the counts
 				String[] search_types = create_Searchtype_arrRT3(j);
 				int min_line, line_count, rel;
@@ -492,17 +514,15 @@ public class RightRule {
 					
 				}
 				
-				SQL_clause =SQL_clause + "and CLM_ID in (" + claims + ") group by CLM_ID"; 
+				SQL_clause = SQL_clause + "and CLM_ID in (" + claims + ") group by CLM_ID"; 
 				System.out.println("Final SQL_Clause is: " + SQL_clause);
-				
-				//This is just for testing
+						
 				SQL = "select CLM_ID, count(CPT_CODE) count1," + RuleID + " " + 
 					  "from " + myRRindex.getClaims_Table() + " " +
 					  "where " + SQL_clause;
 				
 				System.out.println(SQL);
-				// Testing section ends
-				
+								
 				return SQL;
 
 	}
