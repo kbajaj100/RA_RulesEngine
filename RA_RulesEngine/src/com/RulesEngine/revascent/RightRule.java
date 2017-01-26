@@ -234,7 +234,7 @@ public class RightRule {
 			SQL = getSQL_Rule_RT11(j, claims);
 		else if (RightRuleTypeID == 12)
 			SQL = getSQL_Rule_RT12(j, claims, Rule_Line_ID);
-		else if (RightRuleTypeID == 13)
+		else if (RightRuleTypeID == 15)
 			SQL = getSQL_Rule_RT15(j, claims, Rule_Line_ID);
 		
 		return SQL;
@@ -246,9 +246,16 @@ public class RightRule {
 		
 		SQL = getClaims_and_CountsRT3(j, claims, line);
 		
-		String SQL1 = "select distinct CLM_ID from (" + SQL + ")";
+		String SQL1 = "select distinct o11.CLM_ID from (" + SQL + ") o11 ";
 
+		SQL = "select distinct CLM_ID, '' as Code," + RuleID + " as RuleID," + j + " as SubID," + RUN_ID + " as RunID " +
+			  "from " + myRRindex.getLeft_Flag() + " " +
+			  "where CLM_ID not in (" + SQL1 + ") " +
+			  "and Run_ID = " + RUN_ID + " " +
+			  "and Rule_ID = " + RuleID;
 		
+		System.out.println("Right Rule Type ID is: " + RightRuleTypeID);
+		System.out.println(SQL);
 		
 		return SQL;
 	}
@@ -517,7 +524,7 @@ public class RightRule {
 				SQL_clause = SQL_clause + "and CLM_ID in (" + claims + ") group by CLM_ID"; 
 				System.out.println("Final SQL_Clause is: " + SQL_clause);
 						
-				SQL = "select CLM_ID, count(CPT_CODE) count1," + RuleID + " " + 
+				SQL = "select CLM_ID, count(CPT_CODE) count1," + RuleID + " as Rule_ID " + 
 					  "from " + myRRindex.getClaims_Table() + " " +
 					  "where " + SQL_clause;
 				
