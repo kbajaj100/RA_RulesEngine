@@ -234,30 +234,30 @@ public class RightRule {
 		set_SQL_Claims();
 		
 		if (RightRuleTypeID == 1)
-			SQL = getSQL_Rule_RT1(j, claims, Rule_Line_ID);
+			SQL = getSQL_Rule_RT1(j, Rule_Line_ID);
 		else if (RightRuleTypeID == 2)
-			SQL = getSQL_Rule_RT2(j, claims, Rule_Line_ID);
+			SQL = getSQL_Rule_RT2(j, Rule_Line_ID);
 		else if (RightRuleTypeID == 3)
-			SQL = getSQL_Rule_RT3(j, claims, Rule_Line_ID);
+			SQL = getSQL_Rule_RT3(j, Rule_Line_ID);
 		else if (RightRuleTypeID == 5)
-			SQL = getSQL_Rule_RT5(j, claims, Rule_Line_ID);
+			SQL = getSQL_Rule_RT5(j, Rule_Line_ID);
 		else if (RightRuleTypeID == 10)
-			SQL = getSQL_Rule_RT10(j, claims, Rule_Line_ID);
+			SQL = getSQL_Rule_RT10(j, Rule_Line_ID);
 		else if (RightRuleTypeID == 11)
-			SQL = getSQL_Rule_RT11(j, claims);
+			SQL = getSQL_Rule_RT11(j, Rule_Line_ID);
 		else if (RightRuleTypeID == 12)
-			SQL = getSQL_Rule_RT12(j, claims, Rule_Line_ID);
+			SQL = getSQL_Rule_RT12(j, Rule_Line_ID);
 		else if (RightRuleTypeID == 15)
-			SQL = getSQL_Rule_RT15(j, claims, Rule_Line_ID);
+			SQL = getSQL_Rule_RT15(j, Rule_Line_ID);
 		
 		return SQL;
 	}
 	
-	private String getSQL_Rule_RT15(int j, String claims, int line) throws FileNotFoundException, IOException, SQLException {
+	private String getSQL_Rule_RT15(int j, int line) throws FileNotFoundException, IOException, SQLException {
 		
 		init_dbconn();
 		
-		SQL = getClaims_and_CountsRT3(j, claims, line);
+		SQL = getClaims_and_CountsRT3(j, line);
 		
 		String SQL1 = "select distinct o11.CLM_ID from (" + SQL + ") o11 ";
 
@@ -273,7 +273,7 @@ public class RightRule {
 		return SQL;
 	}
 	
-	private String getSQL_Rule_RT12(int j, String claims, int rule_Line_ID) {
+	private String getSQL_Rule_RT12(int j, int rule_Line_ID) {
 		
 		SQL = "select distinct o11.CLM_ID, '" + Code + " ' as Code," + RuleID + " as RuleID," + j + " as SubID," + RUN_ID + " as RunID " + 
 			  "from " + myRRindex.getClaims_Table() + " o11 " + 
@@ -301,7 +301,7 @@ public class RightRule {
 		return SQL;
 	}
 	
-	private String getSQL_Rule_RT11(int j, String claims) throws FileNotFoundException, IOException, SQLException {
+	private String getSQL_Rule_RT11(int j, int Rule_Line_ID) throws FileNotFoundException, IOException, SQLException {
 		// TODO Auto-generated method stub
 		
 		init_dbconn();
@@ -324,17 +324,17 @@ public class RightRule {
 			System.out.println("base rule_id is: " + base);
 			
 			if (base == 1)
-				SQL = getSQL_Rule_RT1(j, claims, checker);
+				SQL = getSQL_Rule_RT1(j, checker);
 			else if (base == 2)
-				SQL = getSQL_Rule_RT2(j, claims, checker);
+				SQL = getSQL_Rule_RT2(j, checker);
 			else if (base == 3)
-				SQL = getSQL_Rule_RT3(j, claims, checker);
+				SQL = getSQL_Rule_RT3(j, checker);
 			else if (base == 5)
-				SQL = getSQL_Rule_RT5(j, claims, checker);
+				SQL = getSQL_Rule_RT5(j, checker);
 			else if (base == 10)
-				SQL = getSQL_Rule_RT10(j, claims, checker);
+				SQL = getSQL_Rule_RT10(j, checker);
 			else if (base == 12)
-				SQL = getSQL_Rule_RT12(j, claims, checker);
+				SQL = getSQL_Rule_RT12(j, checker);
 			
 			// Rel is currently 'AND'. The logic will need to be re-thought/ changed to allow 'OR' 
 			if (Rel ==1){
@@ -351,7 +351,7 @@ public class RightRule {
 		return SQL_11;
 	}
 	
-	private String getSQL_Rule_RT10(int j, String claims, int line) {
+	private String getSQL_Rule_RT10(int j, int line) {
 		// TODO Auto-generated method stub
 		SQL = "select o11.CLM_ID, '" + Code + " ' as Code," + RuleID + " as RuleID," + j + " as SubID," + RUN_ID + " as RunID " +
 			  "from " +
@@ -375,18 +375,18 @@ public class RightRule {
 		return SQL;
 	}
 	
-	private String getSQL_Rule_RT5(int j, String claims, int line) {
+	private String getSQL_Rule_RT5(int j, int line) {
 		// TODO Auto-generated method stub
 		return SQL;
 	}
 	
-	private String getSQL_Rule_RT3(int j, String claims, int line) throws FileNotFoundException, IOException, SQLException {
+	private String getSQL_Rule_RT3(int j, int line) throws FileNotFoundException, IOException, SQLException {
 		
 		init_dbconn();
 		SQL = "create table " + myRRindex.getRight_3() + " (CLM_ID int, CPT_COUNT int, Rule_ID int)";
 		myconn.execSQL(SQL);
 
-		String SQL = getClaims_and_CountsRT3(j, claims, line);
+		String SQL = getClaims_and_CountsRT3(j, line);
 		
 		SQL = "insert into " + myRRindex.getRight_3() + 
 			  " (CLM_ID, CPT_COUNT, Rule_ID)" + " " + SQL;
@@ -415,7 +415,7 @@ public class RightRule {
 		return SQL;
 	}
 	
-	private String getClaims_and_CountsRT3(int j, String claims, int line) throws FileNotFoundException, IOException, SQLException {
+	private String getClaims_and_CountsRT3(int j, int line) throws FileNotFoundException, IOException, SQLException {
 		
 		// Get the claims and the counts
 				String[] search_types = create_Searchtype_arrRT3(j);
@@ -583,7 +583,7 @@ public class RightRule {
 		
 	}
 	
-	private String getSQL_Rule_RT2(int j, String claims, int line) {
+	private String getSQL_Rule_RT2(int j, int line) {
 		
 		SQL = "select a11.CLM_ID, '" + Code + " ' as Code," + RuleID + " as RuleID," + j + " as SubID," + RUN_ID + " as RunID " +
 			  //"select a11.CLM_ID, '" + Code + "'," + RuleID + "," + j + "," + RUN_ID + " " +
@@ -614,7 +614,7 @@ public class RightRule {
 		return SQL;
 	}
 	
-	private String getSQL_Rule_RT1(int j, String claims, int line) {
+	private String getSQL_Rule_RT1(int j, int line) {
 		
 						//CLM_ID, CPT_CODE, 	RULE_ID, SUB_RULE_ID, RUN_ID
 		SQL = "select o11.CLM_ID, '" + Code + " ' as Code," + RuleID + " as RuleID," + j + " as SubID," + RUN_ID + " as RunID " +

@@ -24,11 +24,8 @@ public class LeftRule {
 	static DBConn myconn = new DBConn();
 	static String dbUrl;
 	
-	
-	
-	
 	public String getSearch_Type() {
-		return Search_Type;
+	return Search_Type;
 	}
 
 	public void setSearch_Type(String search_Type) {
