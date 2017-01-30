@@ -12,6 +12,7 @@ public class RightRule {
 	String SQL_out;
 	String Claims;
 	String Code;
+	String SQL_Claims;
 	
 	String Search_Type;
 	int Search_type_count;
@@ -33,6 +34,15 @@ public class RightRule {
 	static String dbUrl;
 	
 	
+	public String get_SQL_Claims() {
+		return SQL_Claims;
+	}
+	public void set_SQL_Claims() {
+		SQL_Claims = "select CLM_ID " +
+					 "from " + myRRindex.getLeft_Flag() + " " + 
+					 "where Rule_ID =" + RuleID + " " +
+					 "and RUN_ID = " + RUN_ID;	
+	}
 	public int getSearch_type_count() {
 		return Search_type_count;
 	}
@@ -117,6 +127,7 @@ public class RightRule {
 	public void setRUN_ID(int rUN_ID) {
 		RUN_ID = rUN_ID;
 	}
+	
 	
 	private void init_dbconn() throws FileNotFoundException, IOException, SQLException {
 		// TODO Auto-generated method stub
@@ -220,6 +231,8 @@ public class RightRule {
 	public String getSQL_Rule(int j, String claims) throws FileNotFoundException, IOException, SQLException {
 		// TODO Auto-generated method stub
 		
+		set_SQL_Claims();
+		
 		if (RightRuleTypeID == 1)
 			SQL = getSQL_Rule_RT1(j, claims, Rule_Line_ID);
 		else if (RightRuleTypeID == 2)
@@ -281,8 +294,8 @@ public class RightRule {
 			  "and Rule_Sub_ID = " + j + " " + 
 			  "and Rule_Line_ID = " + rule_Line_ID  + " " +
 			  ")) " +
-			  "and CLM_ID in (" + claims + ")) " +  
-			  "and o11.CLM_ID in (" + claims + ")";
+			  "and CLM_ID in (" + SQL_Claims + ")) " +  
+			  "and o11.CLM_ID in (" + SQL_Claims + ")";
 		
 		System.out.println(SQL);
 		return SQL;
@@ -345,7 +358,7 @@ public class RightRule {
 			  "(select distinct a11.CLM_ID " +
 			  "from " + myRRindex.getClaims_Table() + " a11 " +
 			  "where a11.CLM_ID in (" +
-			  claims + ") and " + 
+			  SQL_Claims + ") and " + 
 			  "a11.CLM_ID not in " +
 			  "( " +  
 			  "select CLM_ID " +
@@ -355,7 +368,7 @@ public class RightRule {
 			  "from " + myRRindex.getRS() + " " +
 			  "where Rule_ID = " + RuleID + " " + 
 			  "and Rule_Sub_ID = " + j + ")" +
-			  "and CLM_ID in (" + claims + 
+			  "and CLM_ID in (" + SQL_Claims + 
 			  "))) o11";
 		
 		System.out.println(SQL);
@@ -521,7 +534,7 @@ public class RightRule {
 					
 				}
 				
-				SQL_clause = SQL_clause + "and CLM_ID in (" + claims + ") group by CLM_ID"; 
+				SQL_clause = SQL_clause + "and CLM_ID in (" + SQL_Claims + ") group by CLM_ID"; 
 				System.out.println("Final SQL_Clause is: " + SQL_clause);
 						
 				SQL = "select CLM_ID, count(CPT_CODE) count1," + RuleID + " as Rule_ID " + 
@@ -587,7 +600,7 @@ public class RightRule {
 			  "and Rule_Sub_ID = " + j + ")) a12 on " +
 			  "(a11.CLM_ID = a12.CLM_ID) " +
 			  "where a11.CLM_ID in (" +
-			  claims + ") and " + 
+			  SQL_Claims + ") and " + 
 			  "a11.CLM_ID not in " +
 			  "(select distinct CLM_ID " +
 			  "from " + myRRindex.getClaims_Table() + " " +
@@ -615,7 +628,7 @@ public class RightRule {
 			  "and Rule_Line_ID = " + line + " " +
 			  "and Rule_Sub_ID = " + j + ") "+ 
 			  "and CLM_ID in (" +
-			  claims + ") " +
+			  SQL_Claims + ") " +
 			  "group by a11.CLM_ID " +
 			  "having COUNT(a11.CPT_CODE) = 1) o11";
 		
