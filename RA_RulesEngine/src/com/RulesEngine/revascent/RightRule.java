@@ -414,6 +414,7 @@ public class RightRule {
 				
 		return SQL;
 	}
+
 	
 	private String getClaims_and_CountsRT3(int j, int line) throws FileNotFoundException, IOException, SQLException {
 		
