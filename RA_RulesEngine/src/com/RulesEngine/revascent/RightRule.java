@@ -399,7 +399,7 @@ public class RightRule {
 			  "join " + myRRindex.getLeft_Occur() + " a12 on " +
 			  "(a11.CLM_ID = a12.CLM_ID) " + 
 			  "where RUN_ID = " + RUN_ID + " " +
-			  "and a11.CPT_COUNT > a12.COUNT_OCCUR " + 
+			  "and a11.CPT_COUNT < a12.COUNT_OCCUR " + 
 			  "and a12.Rule_ID = " + RuleID + " " + 
 			  "and a12.Rule_ID = a11.Rule_ID" + " " +
 			  "union " +
