@@ -44,7 +44,7 @@ public class LeftRule {
 		return myconn;
 	}
 
-	public static void setMyconn() throws FileNotFoundException, IOException, SQLException {
+	public static void setMyconn() throws Exception {
 		//LeftRule.myconn = myconn;
 		myconn = new DBConn();
 		myconn.setDBConn("C:/Props/RulesEngine/DBprops.properties");
@@ -120,7 +120,7 @@ public class LeftRule {
 		return SQL;
 	}	
 	
-	public void setLeftRuleTypeID(int j) throws FileNotFoundException, IOException, SQLException {
+	public void setLeftRuleTypeID(int j) throws Exception {
 		LeftRuleTypeID = j;	
 		
 		if (j==3)

@@ -5,6 +5,7 @@ import javax.sql.rowset.CachedRowSet;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.Security;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -20,7 +21,7 @@ public class DBConn {
 	private String user = "";
 	private String pass = "";
 	private String dbUrl = "";
-
+	private String enc_status;
 	//private String SQL = ""; 
 	
 	private Connection conn = null;
@@ -29,7 +30,7 @@ public class DBConn {
 	private CachedRowSetImpl crs;
 	
 	
-	public void setDBConn(String PropFileLocation) throws FileNotFoundException, IOException, SQLException{
+	public void setDBConn(String PropFileLocation) throws Exception{
 					
 			//1. Load the properties file
 			Properties props = new Properties();
@@ -39,10 +40,76 @@ public class DBConn {
 			user = props.getProperty("user");
 			pass = props.getProperty("password");
 			dbName = props.getProperty("dbName");
-			dbUrl = props.getProperty("dbUrl") +  ";databaseName="+ dbName + ";user=" + user + ";password=" + pass;
-			//System.out.println(dbUrl);
+			dbName = props.getProperty("dbName");
+			enc_status = props.getProperty("encrypted");
+			
+			DBEncryptor myenc = new DBEncryptor("1234567891011121", enc_status);
+			
+			if (enc_status.equals("1")){	// new password
+				dbUrl = props.getProperty("dbUrl") +  ";databaseName="+ dbName + ";user=" + user + ";password=" + pass;
+				myenc.setEnc(pass);
+				pass = myenc.getEnc();
+				//Write the password back to the props file and change enc value to 0
+			}
+			else { // old password (encrypted)
+				myenc.setDec(pass);
+				pass = myenc.getDec();
+				dbUrl = props.getProperty("dbUrl") +  ";databaseName="+ dbName + ";user=" + user + ";password=" + pass;
+			}//System.out.println(dbUrl);
 			
 	}
+
+	
+	/*private void encryptandstore() {
+		// TODO Auto-generated method stub
+		
+		System.out.println("Encrypted is: " + enc_status);
+		
+		byte[] input;
+		byte[] keybytes = "12345678".getBytes();
+		byte[] ivBytes = "input123".getBytes();
+		
+		SecretKeySpec key = new SecretKeySpec(keybytes,"DES");
+		IvParameterSpec ivSpec = new IvParameterSpec(ivBytes); 
+		Cipher cipher;
+		byte[] cipherText;
+		int ctLength;
+		String Encryptedpwd;
+		
+		try {
+			Security.addProvider(new org.bouncycastle.jce.provider.BounceCastleProvider());
+			input = pass.getBytes();
+			//SecretKeySpec mykey = new SecretKeySpec(keybytes, "DES");
+			cipher = Cipher.getInstance("DES/CTR/NoPadding", "BC");
+			
+			cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec);
+			cipherText = new byte[cipher.getOutputSize(input.length)];
+			
+			ctLength = cipher.update(input, 0, input.length, cipherText,0);
+			ctLength += cipher.doFinal(cipherText, ctLength);
+			
+			Encryptedpwd = new String(cipherText);
+			System.out.println("Encrypted pwd is: " + new String(cipherText));
+		}
+
+		catch (Exception ex){
+
+		}
+
+	}
+
+	private void decryptpass() {
+		// TODO Auto-generated method stub
+		//StrongTextEncryptor textEncryptor = new StrongTextEncryptor();
+		
+		//textEncryptor.setPassword(pass);
+		
+		//pass = textEncryptor.encrypt(pass);
+		System.out.println(pass);
+		//pass = textEncryptor.decrypt(pass);
+		
+		//System.out.println(pass);
+	}*/
 
 	public String getdbName(){
 		return dbName;
@@ -56,6 +123,10 @@ public class DBConn {
 		//System.out.println(dbUrl);
 		return dbUrl;
 	}
+	
+	/*public String getpass(){
+		return pass;
+	}*/
 	
 	public int execSQL_returnint(String SQL){
 		

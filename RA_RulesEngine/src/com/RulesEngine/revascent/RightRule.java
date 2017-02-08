@@ -129,7 +129,7 @@ public class RightRule {
 	}
 	
 	
-	private void init_dbconn() throws FileNotFoundException, IOException, SQLException {
+	private void init_dbconn() throws Exception {
 		// TODO Auto-generated method stub
 		myconn = new DBConn();
 		myconn.setDBConn("C:/Props/RulesEngine/DBprops.properties");
@@ -228,7 +228,7 @@ public class RightRule {
 		return SQL;
 	}
 	
-	public String getSQL_Rule(int j, String claims) throws FileNotFoundException, IOException, SQLException {
+	public String getSQL_Rule(int j, String claims) throws Exception {
 		// TODO Auto-generated method stub
 		
 		set_SQL_Claims();
@@ -253,7 +253,7 @@ public class RightRule {
 		return SQL;
 	}
 	
-	private String getSQL_Rule_RT15(int j, int line) throws FileNotFoundException, IOException, SQLException {
+	private String getSQL_Rule_RT15(int j, int line) throws Exception {
 		
 		init_dbconn();
 		
@@ -301,7 +301,7 @@ public class RightRule {
 		return SQL;
 	}
 	
-	private String getSQL_Rule_RT11(int j, int Rule_Line_ID) throws FileNotFoundException, IOException, SQLException {
+	private String getSQL_Rule_RT11(int j, int Rule_Line_ID) throws Exception {
 		// TODO Auto-generated method stub
 		
 		init_dbconn();
@@ -380,7 +380,7 @@ public class RightRule {
 		return SQL;
 	}
 	
-	private String getSQL_Rule_RT3(int j, int line) throws FileNotFoundException, IOException, SQLException {
+	private String getSQL_Rule_RT3(int j, int line) throws Exception {
 		
 		init_dbconn();
 		SQL = "create table " + myRRindex.getRight_3() + " (CLM_ID int, CPT_COUNT int, Rule_ID int)";

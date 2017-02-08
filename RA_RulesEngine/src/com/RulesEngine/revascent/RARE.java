@@ -8,9 +8,11 @@ import java.util.ArrayList;
 
 import com.sun.rowset.CachedRowSetImpl;
 
+
 public class RARE {
 
 	private static String dbUrl ="";
+	private static String pwd = ""; //to be commented after testing
 	
 	static DBConn myconn = new DBConn();
 	int numrules;
@@ -25,7 +27,7 @@ public class RARE {
 	LeftRule[] myLR = new LeftRule[1]; // creates an array of the LR object which has all the logic for the Left Rules
 	RightRule[] myRight = new RightRule[1];
 	
-	public void execRules() throws FileNotFoundException, IOException, SQLException {
+	public void execRules() throws Exception {
 		// TODO Auto-generated method stub
 
 		initiateDBConn();
@@ -64,7 +66,7 @@ public class RARE {
 		RUN_ID = (myconn.execSQL_returnint(SQL));
 	}
 
-	private String getRightClaimList(int i, String claims) throws FileNotFoundException, IOException, SQLException {
+	private String getRightClaimList(int i, String claims) throws Exception {
 		// TODO Auto-generated method stub
 		
 		int right_rule_type = 0;
@@ -127,7 +129,7 @@ public class RARE {
 		return claims;
 	}
 
-	private String getLeftClaimList(int k) throws FileNotFoundException, IOException, SQLException {
+	private String getLeftClaimList(int k) throws Exception {
 		// k is counter in the LeftRule object array
 		
 		int left_sub_count, left_rule_type = 0;
@@ -201,20 +203,28 @@ public class RARE {
 		
 	}
 
-	private void initiateDBConn() throws FileNotFoundException, IOException, SQLException {
+	private void initiateDBConn() throws Exception {
 		// TODO Auto-generated method stub
 		
 		dbUrl = getdbUrl();
 		
 	}
 
-	public static String getdbUrl() throws FileNotFoundException, IOException, SQLException{
+	public static String getdbUrl() throws Exception{
 		//Returns the number of rule IDs in the database
 		
 		myconn.setDBConn("C:/Props/RulesEngine/DBprops.properties");
 		
 		dbUrl = myconn.getdbUrl();
 		
+		/*pwd = myconn.getpass();
+		
+		System.out.println("Pwd is: " + pwd );
+		
+		StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
+		String encryptedPassword = passwordEncryptor.encryptPassword(pwd);
+		
+		System.out.println("Encrypted pwd is: " + encryptedPassword );*/
 		//System.out.println(dbUrl);
 		return dbUrl;
 	}
