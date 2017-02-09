@@ -4,6 +4,7 @@ import java.util.Properties;
 import javax.sql.rowset.CachedRowSet;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.Security;
 import java.sql.Connection;
@@ -34,7 +35,9 @@ public class DBConn {
 					
 			//1. Load the properties file
 			Properties props = new Properties();
-			props.load(new FileInputStream(PropFileLocation)); 
+			FileInputStream fis;
+			fis = new FileInputStream(PropFileLocation);
+			props.load(fis); 
 			
 			//2. Read the props
 			user = props.getProperty("user");
@@ -43,13 +46,20 @@ public class DBConn {
 			dbName = props.getProperty("dbName");
 			enc_status = props.getProperty("encrypted");
 			
-			DBEncryptor myenc = new DBEncryptor("1234567891011121", enc_status);
+			DBEncryptor myenc = new DBEncryptor("dewfret435erfgww", enc_status);
 			
 			if (enc_status.equals("1")){	// new password
 				dbUrl = props.getProperty("dbUrl") +  ";databaseName="+ dbName + ";user=" + user + ";password=" + pass;
 				myenc.setEnc(pass);
 				pass = myenc.getEnc();
-				//Write the password back to the props file and change enc value to 0
+				fis.close();
+				
+				//Write the password back to the props file 
+				FileOutputStream outfile = new FileOutputStream ( PropFileLocation) ;
+				props.setProperty("password", pass);
+				props.setProperty("encrypted", "0");
+				props.store(outfile, pass);
+				props.store(outfile, "0");
 			}
 			else { // old password (encrypted)
 				myenc.setDec(pass);
@@ -58,58 +68,6 @@ public class DBConn {
 			}//System.out.println(dbUrl);
 			
 	}
-
-	
-	/*private void encryptandstore() {
-		// TODO Auto-generated method stub
-		
-		System.out.println("Encrypted is: " + enc_status);
-		
-		byte[] input;
-		byte[] keybytes = "12345678".getBytes();
-		byte[] ivBytes = "input123".getBytes();
-		
-		SecretKeySpec key = new SecretKeySpec(keybytes,"DES");
-		IvParameterSpec ivSpec = new IvParameterSpec(ivBytes); 
-		Cipher cipher;
-		byte[] cipherText;
-		int ctLength;
-		String Encryptedpwd;
-		
-		try {
-			Security.addProvider(new org.bouncycastle.jce.provider.BounceCastleProvider());
-			input = pass.getBytes();
-			//SecretKeySpec mykey = new SecretKeySpec(keybytes, "DES");
-			cipher = Cipher.getInstance("DES/CTR/NoPadding", "BC");
-			
-			cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec);
-			cipherText = new byte[cipher.getOutputSize(input.length)];
-			
-			ctLength = cipher.update(input, 0, input.length, cipherText,0);
-			ctLength += cipher.doFinal(cipherText, ctLength);
-			
-			Encryptedpwd = new String(cipherText);
-			System.out.println("Encrypted pwd is: " + new String(cipherText));
-		}
-
-		catch (Exception ex){
-
-		}
-
-	}
-
-	private void decryptpass() {
-		// TODO Auto-generated method stub
-		//StrongTextEncryptor textEncryptor = new StrongTextEncryptor();
-		
-		//textEncryptor.setPassword(pass);
-		
-		//pass = textEncryptor.encrypt(pass);
-		System.out.println(pass);
-		//pass = textEncryptor.decrypt(pass);
-		
-		//System.out.println(pass);
-	}*/
 
 	public String getdbName(){
 		return dbName;

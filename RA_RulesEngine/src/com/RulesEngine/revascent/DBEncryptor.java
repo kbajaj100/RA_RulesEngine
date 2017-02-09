@@ -19,7 +19,7 @@ public class DBEncryptor {
 
 	public DBEncryptor (String key, String stat){
 		keyValue = key.getBytes();
-		System.out.println("keyvalue is: " + keyValue);
+		//System.out.println("keyvalue is: " + keyValue);
 		status = stat;
 	}
 	
@@ -35,7 +35,7 @@ public class DBEncryptor {
 
 	public String getDec() throws Exception {
 		dec = Decrypt();
-		System.out.println("Dec value is: " + dec);
+		//System.out.println("Dec value is: " + dec);
 		return dec;
 	}
 
