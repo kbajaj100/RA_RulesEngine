@@ -213,7 +213,9 @@ public class RARE {
 	public static String getdbUrl() throws Exception{
 		//Returns the number of rule IDs in the database
 		
-		myconn.setDBConn("C:/Props/RulesEngine/DBprops.properties");
+		String path = "C:/Props/RulesEngine/NewPath/DBpropsRules.properties";
+		
+		myconn.setDBConn(path);
 		
 		dbUrl = myconn.getdbUrl();
 		

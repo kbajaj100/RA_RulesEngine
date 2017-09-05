@@ -132,7 +132,7 @@ public class RightRule {
 	private void init_dbconn() throws Exception {
 		// TODO Auto-generated method stub
 		myconn = new DBConn();
-		myconn.setDBConn("C:/Props/RulesEngine/DBprops.properties");
+		myconn.setDBConn("C:/Props/RulesEngine/NewPath/DBpropsRules.properties");
 	}
 	
 	public String getSQL_RelNext(int j, int line){

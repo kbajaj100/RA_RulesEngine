@@ -47,7 +47,7 @@ public class LeftRule {
 	public static void setMyconn() throws Exception {
 		//LeftRule.myconn = myconn;
 		myconn = new DBConn();
-		myconn.setDBConn("C:/Props/RulesEngine/DBprops.properties");
+		myconn.setDBConn("C:/Props/RulesEngine/NewPath/DBpropsRules.properties");
 		
 	}
 	
